@@ -1,0 +1,26 @@
+{
+  "name": "selfbot",
+  "version": "2.6.2",
+  "description": "Typical Selfbot, give yourself some more commands.",
+  "main": "selfbot.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YorkAARGH/selfbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YorkAARGH/selfbot/issues"
+  },
+  "scripts": {
+    "start": "pm2 start selfbot.js"
+  },
+  "author": "YorkAARGH, LuckyEvie",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^9.2.0",
+    "fs-extra": "^0.30.0",
+    "moment": "^2.15.0",
+    "sqlite": "^2.2.0",
+    "touch": "^1.0.0",
+    "winston": "^2.2.0"
+  }
+}
