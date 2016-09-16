@@ -35,6 +35,7 @@ const aliases = {
 };
 
 const commands = {
+	
     ping: {
         name: 'ping',
         description: 'This is a standard response command.',
@@ -72,6 +73,70 @@ const commands = {
             }
         }
     },
+
+	afk: {
+		name:'afk',
+		description:'Appends [AFK] to the nickname',
+		usage:'',
+		permissions: ['CHANGE_NICKNAME'],
+		execute: function(bot, msg, args) {
+			let nickname = msg.guild.member(bot.user).nickname;
+			let username = msg.guild.member(bot.user).user.username;
+			if (!nickname) {
+				msg.guild.member(bot.user).setNickname(username + " [AFK]").then(() => {
+					msg.edit("Set to away from keyboard").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else
+
+			if (nickname.search(" [AFK]")) {
+				msg.guild.member(bot.user).setNickname("").then(() => {
+					msg.edit("No longer AFK").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else
+
+			if (nickname && !nickname.includes(" [AFK]")) {
+				msg.guild.member(bot.user).setNickname(nickname + " [AFK]").then(() => {
+					msg.edit("Set to Away From Keyboard").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else if (nickname.search(" [AFK]")) {
+				msg.guild.member(bot.user).setNickname(nickname.replace(/ \[AFK\]/g, "")).then(() => {
+					msg.edit("No longer AFK").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			}
+		}
+	},
+
+	sleeping: {
+		name:'sleeping',
+		description:'Appends [SLEEPING] to the nickname',
+		usage:'',
+		permissions: ['CHANGE_NICKNAME'],
+		execute: function(bot, msg, args) {
+			let nickname = msg.guild.member(bot.user).nickname;
+			let username = msg.guild.member(bot.user).user.username;
+			if (!nickname) {
+			    msg.guild.member(bot.user).setNickname(username + " [SLEEPING]").then(() => {
+					msg.edit("Set to sleeping").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else
+
+			if (nickname.search(" [SLEEPING]")) {
+			    msg.guild.member(bot.user).setNickname("").then(() => {
+					msg.edit("No longer sleeping").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else
+
+			if (nickname && !nickname.includes(" [SLEEPING]")) {
+			    msg.guild.member(bot.user).setNickname(nickname + " [SLEEPING]").then(() => {
+					msg.edit("Set to sleeping").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			} else if (nickname.search(" [SLEEPING]")) {
+			    msg.guild.member(bot.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, "")).then(() => {
+					msg.edit("No longer sleeping").then(response => response.delete(1000));
+				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+			}
+		}
+	},
 
     info: {
         name: 'info',
