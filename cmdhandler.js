@@ -56,29 +56,29 @@ const commands = {
         execute: function(bot, msg, args) {
             let sendhalp = [];
             let command = args[0];
-            if (args[0]) {
-                if (commands.hasOwnProperty(args[0])) {
+            if (command) {
+                if (commands.hasOwnProperty(command)) {
                     sendhalp.push('```xl')
                     sendhalp.push("Description:");
-                    sendhalp.push(`"${commands[args[0]].description}"`);
-                    if (commands[args[0]].permissions) {
+                    sendhalp.push(`"${commands[command].description}"`);
+                    if (commands[command].permissions) {
                         sendhalp.push("Permissions:");
-                        sendhalp.push(`"${commands[args[0]].permissions}"`);
+                        sendhalp.push(`"${commands[command].permissions}"`);
                     }
-                    if (commands[args[0]].usage.length > 0) {
+                    if (commands[command].usage.length > 0) {
                         sendhalp.push("Usage:");
-                        sendhalp.push(`"${commands[args[0]].usage}"`);
+                        sendhalp.push(`"${commands[command].usage}"`);
                     }
                     sendhalp.push('```')
                     msg.edit(sendhalp.join("\n"));
-                } else { //typical help command
-                    let toSend = [];
-                    for (let key in commands) {
-                        toSend.push(`​​${key}: ${commands[key].description}`​​);
-                    }
-                    msg.edit(toSend.join('\n'));
                 }
 
+            } else { //typical help command
+                // let toSend = [];
+                // for (let key in commands) {
+                //     toSend.push(`​​${key}: ${commands[key].description}`​​);
+                // }
+                // msg.edit(toSend.join('\n'));
             }
         }
     },
