@@ -74,11 +74,13 @@ const commands = {
                 }
 
             } else { //typical help command
-                // let toSend = [];
-                // for (let key in commands) {
-                //     toSend.push(`​​${key}: ${commands[key].description}`​​);
-                // }
-                // msg.edit(toSend.join('\n'));
+				let toSend = [];
+				toSend.push('```xl');
+				for (let key in commands) {
+					toSend.push(`${key}: ${commands[key].description}`)
+				}
+				toSend.push('```');
+				msg.edit(toSend.join('\n'));
             }
         }
     },
@@ -149,7 +151,7 @@ const commands = {
 
     info: {
         name: 'info',
-        description: 'Displays information such as memory usage, how long it\'s been running for, size of guilds/members/channels and when it launched.',
+        description: 'Displays information such as memory usage, how long it has been running for, size of guilds/members/channels and when it launched.',
         usage: '',
         execute: function(bot, msg, args) {
             let uptime = GetUptime();
@@ -228,7 +230,7 @@ const commands = {
 
     pin: {
         name: 'pin',
-        description: "This emulates the pin message functionality native to discord. Since you won't always have pin message permissions, you'll need to enable the developer mode in discord so you can get the message ID's to pin.",
+        description: "This emulates the pin message functionality native to discord. Since you will not always have pin message permissions, you will need to enable the developer mode in discord so you can get the message ID to pin.",
         usage: 'pin <message ID>, <last> or <mention last>',
         execute: function(bot, msg, args) {
             const notes = settings.pinchannel;
@@ -344,7 +346,7 @@ const commands = {
 
     purge: {
         name: 'purge',
-        description: 'This is prune\'s bigger, meaner sibling, this will delete anyone\'s messages within the quantity you specified.',
+        description: 'This is the bigger and meaner sibling of prune, this will delete any messages within the quantity you specified.',
         usage: 'purge <quantity>',
         permissions: ['MANAGE_MESSAGES', 'READ_MESSAGE_HISTORY'],
         execute: function(bot, msg, args) {
@@ -428,7 +430,7 @@ const commands = {
 
     taglist: {
         name: 'taglist',
-        description: 'Use this if you want to display all the tags you\'ve stored.',
+        description: 'Use this if you want to display all the tags you have stored.',
         usage: 'taglist',
         execute: function(bot, msg, args) {
             sql.open('./selfbot.sqlite').then(() => sql.all('SELECT * FROM tags')).then(rows => {
@@ -466,7 +468,7 @@ const commands = {
 
     delslash: {
         name: 'delslash',
-        description: 'If you want to delete a tag, this is the command you\'d need',
+        description: 'If you want to delete a tag, this is the command you would need',
         usage: 'delslash <name>',
         execute: function(bot, msg, args) {
             sql.open('./selfbot.sqlite').then(() => {
@@ -561,7 +563,7 @@ const commands = {
 
     reboot: {
         name: 'reboot',
-        description: 'This will make your bot exit cleanly, and if you\'re using PM2, Forver or a similar module, it will restart it.',
+        description: 'This will make your bot exit cleanly, and if you are using PM2, Forver or a similar module, it will restart it.',
         usage: '',
         execute: function(bot, msg, args) {
             msg.edit("Rebooting...").then(() => {
