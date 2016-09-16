@@ -8,6 +8,9 @@ const moment = require('moment');
 const sql = require('sqlite');
 const winston = require('winston');
 const util = require('util');
+const Pad = (str, l) => {
+	return str + Array(l - str.length + 1).join(' ');
+};
 
 function GetUptime() {
 	let sec_num = parseInt(process.uptime(), 10);
@@ -59,7 +62,7 @@ const commands = {
 			let command = args[0];
 			if (command) {
 				if (commands.hasOwnProperty(command)) {
-					sendhalp.push('```xl');
+					sendhalp.push('\`\`\`xl');
 					sendhalp.push('Description:');
 					sendhalp.push(`'${commands[command].description}'`);
 					if (commands[command].permissions) {
@@ -70,18 +73,22 @@ const commands = {
 						sendhalp.push('Usage:');
 						sendhalp.push(`'${commands[command].usage}'`);
 					}
-					sendhalp.push('```');
+					sendhalp.push('\`\`\`');
 					msg.edit(sendhalp.join('\n'));
 				}
 
 			} else { //typical help command
-				let toSend = [];
-				toSend.push('```xl');
+				let toSend = '';
+				let i = 0;
 				for (let key in commands) {
-					toSend.push(`${key}: ${commands[key].description}`);
+					if ((i % 3) == 0) {
+						toSend += `\n${Pad(toTitleCase(key), 12)}`;
+					} else {
+						toSend += `${Pad(toTitleCase(key), 12)}`;
+					}
+					i++;
 				}
-				toSend.push('```');
-				msg.edit(toSend.join('\n'));
+				msg.edit(`\`\`\`xl\nThis is a list of commands available to you, to get more info just do ${settings.prefix}help <command>\n ${toSend} \n\`\`\``);
 			}
 		}
 	},
@@ -162,7 +169,7 @@ const commands = {
 			let sqli = pack.dependencies['sqlite'].split('^')[1];
 			let botv = pack.version;
 			let message = [
-				'```xl',
+				'\`\`\`xl',
 				'STATISTICS',
 				`• Mem Usage	: ${client.MemoryUsing}`,
 				`• Uptime	   : ${uptime}`,
@@ -173,7 +180,7 @@ const commands = {
 				`• Discord.js   : v${djsv}`,
 				`• Bot Version  : v${botv}`,
 				`• Dependencies : Winston v${wins}, Moment v${mome}, SQLite3 v${sqli}`,
-				'```'
+				'\`\`\`'
 			];
 			msg.edit(message.join('\n'));
 		}
@@ -231,7 +238,7 @@ const commands = {
 
 	pin: {
 		name: 'pin',
-		description: 'This emulates the pin message functionality native to discord. Since you will not always have pin message permissions, you will need to enable the developer mode in discord so you can get the message ID to pin.',
+		description: 'This emulates the pin message functionality native to discord.',
 		usage: 'pin <message ID>, <last> or <mention last>',
 		execute: function(bot, msg, args) {
 			const notes = settings.pinchannel;
@@ -491,7 +498,7 @@ const commands = {
 		execute: function(bot, msg) {
 			sql.open('./selfbot.sqlite').then(() => sql.all('SELECT * FROM shortcuts')).then(rows => {
 				let message = [];
-				message.push('```xl');
+				message.push('\`\`\`xl');
 				var longest = rows.reduce(function(a, b) {
 					return a.name.length > b.name.length ? a : b;
 				});
@@ -499,7 +506,7 @@ const commands = {
 					let padded = (row.name + ' '.repeat(longest.name.length + 1 - row.name.length));
 					message.push(`${settings.prefix}${padded}: ${row.contents}`);
 				});
-				message.push('```');
+				message.push('\`\`\`');
 				msg.edit(message).then(response =>
 					response.delete(2000)
 				);
@@ -528,34 +535,34 @@ const commands = {
 					insp.toString().includes(bot.token)) return msg.edit('Cannot complete eval due to token.');
 
 				tosend.push('**EVAL:**');
-				tosend.push('```xl');
+				tosend.push('\`\`\`xl');
 				tosend.push(clean(suffix));
-				tosend.push('```');
+				tosend.push('\`\`\`');
 				tosend.push('**Evaluates to:**');
-				tosend.push('```xl');
+				tosend.push('\`\`\`xl');
 				tosend.push(clean(evaled));
-				tosend.push('```');
+				tosend.push('\`\`\`');
 				if (evaled instanceof Object) {
 					tosend.push('**Inspect:**');
-					tosend.push('```xl');
+					tosend.push('\`\`\`xl');
 					tosend.push(insp);
-					tosend.push('```');
+					tosend.push('\`\`\`');
 				} else {
 					tosend.push('**Type:**');
-					tosend.push('```xl');
+					tosend.push('\`\`\`xl');
 					tosend.push(type);
-					tosend.push('```');
+					tosend.push('\`\`\`');
 				}
 				msg.edit(tosend.join('\n'));
 				winston.log('info', `Evaluated ${tosend.join('\n')}`);
 			} catch (err) {
 				let tosend = [];
-				tosend.push('**EVAL:** ```xl');
+				tosend.push('**EVAL:** \`\`\`xl');
 				tosend.push(clean(suffix));
-				tosend.push('```');
-				tosend.push('**Error:** ```xl');
+				tosend.push('\`\`\`');
+				tosend.push('**Error:** \`\`\`xl');
 				tosend.push(clean(err.stack));
-				tosend.push('```');
+				tosend.push('\`\`\`');
 				msg.edit(tosend.join('\n'));
 				winston.log('info', `Error: ${tosend.join('\n')}`);
 			}
