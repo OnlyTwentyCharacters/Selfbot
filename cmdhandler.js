@@ -31,11 +31,15 @@ const aliases = {
     'p': 'ping',
     'r': 'reload',
     'h': 'help',
-    'rld': 'reload'
+    'rld': 'reload',
+	'brb': 'afk',
+	'away': 'afk',
+	'sleep': 'sleeping',
+	'gone': 'sleeping'
 };
 
 const commands = {
-	
+
     ping: {
         name: 'ping',
         description: 'This is a standard response command.',
@@ -76,64 +80,64 @@ const commands = {
 
 	afk: {
 		name:'afk',
-		description:'Appends [AFK] to the nickname',
+		description:'Appends [is AFK] to the nickname',
 		usage:'',
 		permissions: ['CHANGE_NICKNAME'],
 		execute: function(bot, msg, args) {
 			let nickname = msg.guild.member(bot.user).nickname;
 			let username = msg.guild.member(bot.user).user.username;
 			if (!nickname) {
-				msg.guild.member(bot.user).setNickname(username + " [AFK]").then(() => {
+				msg.guild.member(bot.user).setNickname(username + " [is AFK]").then(() => {
 					msg.edit("Set to away from keyboard").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			} else
 
-			if (nickname.search(" [AFK]")) {
+			if (nickname.search(" [is AFK]")) {
 				msg.guild.member(bot.user).setNickname("").then(() => {
 					msg.edit("No longer AFK").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			} else
 
-			if (nickname && !nickname.includes(" [AFK]")) {
-				msg.guild.member(bot.user).setNickname(nickname + " [AFK]").then(() => {
+			if (nickname && !nickname.includes(" [is AFK]")) {
+				msg.guild.member(bot.user).setNickname(nickname + " [is AFK]").then(() => {
 					msg.edit("Set to Away From Keyboard").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
-			} else if (nickname.search(" [AFK]")) {
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+			} else if (nickname.search(" [is AFK]")) {
 				msg.guild.member(bot.user).setNickname(nickname.replace(/ \[AFK\]/g, "")).then(() => {
 					msg.edit("No longer AFK").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			}
 		}
 	},
 
 	sleeping: {
 		name:'sleeping',
-		description:'Appends [SLEEPING] to the nickname',
+		description:'Appends [is sleeping] to the nickname',
 		usage:'',
 		permissions: ['CHANGE_NICKNAME'],
 		execute: function(bot, msg, args) {
 			let nickname = msg.guild.member(bot.user).nickname;
 			let username = msg.guild.member(bot.user).user.username;
 			if (!nickname) {
-			    msg.guild.member(bot.user).setNickname(username + " [SLEEPING]").then(() => {
+			    msg.guild.member(bot.user).setNickname(username + " [is sleeping]").then(() => {
 					msg.edit("Set to sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			} else
 
-			if (nickname.search(" [SLEEPING]")) {
+			if (nickname.search(" [is sleeping]")) {
 			    msg.guild.member(bot.user).setNickname("").then(() => {
 					msg.edit("No longer sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			} else
 
-			if (nickname && !nickname.includes(" [SLEEPING]")) {
-			    msg.guild.member(bot.user).setNickname(nickname + " [SLEEPING]").then(() => {
+			if (nickname && !nickname.includes(" [is sleeping]")) {
+			    msg.guild.member(bot.user).setNickname(nickname + " [is sleeping]").then(() => {
 					msg.edit("Set to sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
-			} else if (nickname.search(" [SLEEPING]")) {
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+			} else if (nickname.search(" [is sleeping]")) {
 			    msg.guild.member(bot.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, "")).then(() => {
 					msg.edit("No longer sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get("213448445590110208").sendMessage(error.message));
+				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
 			}
 		}
 	},
@@ -382,19 +386,23 @@ const commands = {
         }
     },
 
-    tag: {
-        name: 'tag',
-        description: 'This is how you use the tags you create.',
-        usage: 'tag <tag name>',
-        execute: function(bot, msg, args) {
-			sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = ?`, args[0])).then(row => {
-				// if (!row) return;
-				console.log(args[0])
-				console.log(row.contents);
-				msg.edit(row.contents);
-			}).catch(console.error);
-        }
-    },
+	tag: {
+	    name: 'tag',
+	    description: 'This is how you use the tags you create.',
+	    usage: 'tag <tag name>',
+	    execute: function(bot, msg, args) {
+	        sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = ?`, args[0])).then(row => {
+	            if (row) {
+	                let message_content = msg.mentions.users.array().length === 1 ? `${msg.mentions.users.array()[0]} ${row.contents}` : row.contents;
+	                msg.edit(message_content);
+	            } else {
+	                msg.edit(`Could not find tag (${args[0]}).`).then(response => {
+	                    response.delete(1000);
+	                });
+	            }
+	        }).catch(console.error);
+	    }
+	},
 
     deltag: {
         name: 'deltag',
