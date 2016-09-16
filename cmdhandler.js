@@ -32,10 +32,10 @@ const aliases = {
     'r': 'reload',
     'h': 'help',
     'rld': 'reload',
-	'brb': 'afk',
-	'away': 'afk',
-	'sleep': 'sleeping',
-	'gone': 'sleeping'
+    'brb': 'afk',
+    'away': 'afk',
+    'sleep': 'sleeping',
+    'gone': 'sleeping'
 };
 
 const commands = {
@@ -72,75 +72,80 @@ const commands = {
                     sendhalp.push('```')
                     msg.edit(sendhalp.join("\n"));
                 } else { //typical help command
+                    let toSend = [];
+                    for (let key in commands) {
+                        toSend.push(`​​${key}: ${commands[key].description}`​​);
+                    }
+                    msg.edit(toSend.join('\n'));
                 }
 
             }
         }
     },
 
-	afk: {
-		name:'afk',
-		description:'Appends [is AFK] to the nickname',
-		usage:'',
-		permissions: ['CHANGE_NICKNAME'],
-		execute: function(bot, msg, args) {
-			let nickname = msg.guild.member(bot.user).nickname;
-			let username = msg.guild.member(bot.user).user.username;
-			if (!nickname) {
-				msg.guild.member(bot.user).setNickname(username + " [is AFK]").then(() => {
-					msg.edit("Set to away from keyboard").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else
+    afk: {
+        name: 'afk',
+        description: 'Appends [is AFK] to the nickname',
+        usage: '',
+        permissions: ['CHANGE_NICKNAME'],
+        execute: function(bot, msg, args) {
+            let nickname = msg.guild.member(bot.user).nickname;
+            let username = msg.guild.member(bot.user).user.username;
+            if (!nickname) {
+                msg.guild.member(bot.user).setNickname(username + " [is AFK]").then(() => {
+                    msg.edit("Set to away from keyboard").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else
 
-			if (nickname.search(" [is AFK]")) {
-				msg.guild.member(bot.user).setNickname("").then(() => {
-					msg.edit("No longer AFK").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else
+            if (nickname.search(" [is AFK]")) {
+                msg.guild.member(bot.user).setNickname("").then(() => {
+                    msg.edit("No longer AFK").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else
 
-			if (nickname && !nickname.includes(" [is AFK]")) {
-				msg.guild.member(bot.user).setNickname(nickname + " [is AFK]").then(() => {
-					msg.edit("Set to Away From Keyboard").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else if (nickname.search(" [is AFK]")) {
-				msg.guild.member(bot.user).setNickname(nickname.replace(/ \[AFK\]/g, "")).then(() => {
-					msg.edit("No longer AFK").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			}
-		}
-	},
+            if (nickname && !nickname.includes(" [is AFK]")) {
+                msg.guild.member(bot.user).setNickname(nickname + " [is AFK]").then(() => {
+                    msg.edit("Set to Away From Keyboard").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else if (nickname.search(" [is AFK]")) {
+                msg.guild.member(bot.user).setNickname(nickname.replace(/ \[AFK\]/g, "")).then(() => {
+                    msg.edit("No longer AFK").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            }
+        }
+    },
 
-	sleeping: {
-		name:'sleeping',
-		description:'Appends [is sleeping] to the nickname',
-		usage:'',
-		permissions: ['CHANGE_NICKNAME'],
-		execute: function(bot, msg, args) {
-			let nickname = msg.guild.member(bot.user).nickname;
-			let username = msg.guild.member(bot.user).user.username;
-			if (!nickname) {
-			    msg.guild.member(bot.user).setNickname(username + " [is sleeping]").then(() => {
-					msg.edit("Set to sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else
+    sleeping: {
+        name: 'sleeping',
+        description: 'Appends [is sleeping] to the nickname',
+        usage: '',
+        permissions: ['CHANGE_NICKNAME'],
+        execute: function(bot, msg, args) {
+            let nickname = msg.guild.member(bot.user).nickname;
+            let username = msg.guild.member(bot.user).user.username;
+            if (!nickname) {
+                msg.guild.member(bot.user).setNickname(username + " [is sleeping]").then(() => {
+                    msg.edit("Set to sleeping").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else
 
-			if (nickname.search(" [is sleeping]")) {
-			    msg.guild.member(bot.user).setNickname("").then(() => {
-					msg.edit("No longer sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else
+            if (nickname.search(" [is sleeping]")) {
+                msg.guild.member(bot.user).setNickname("").then(() => {
+                    msg.edit("No longer sleeping").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else
 
-			if (nickname && !nickname.includes(" [is sleeping]")) {
-			    msg.guild.member(bot.user).setNickname(nickname + " [is sleeping]").then(() => {
-					msg.edit("Set to sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			} else if (nickname.search(" [is sleeping]")) {
-			    msg.guild.member(bot.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, "")).then(() => {
-					msg.edit("No longer sleeping").then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
-			}
-		}
-	},
+            if (nickname && !nickname.includes(" [is sleeping]")) {
+                msg.guild.member(bot.user).setNickname(nickname + " [is sleeping]").then(() => {
+                    msg.edit("Set to sleeping").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            } else if (nickname.search(" [is sleeping]")) {
+                msg.guild.member(bot.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, "")).then(() => {
+                    msg.edit("No longer sleeping").then(response => response.delete(1000));
+                }).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+            }
+        }
+    },
 
     info: {
         name: 'info',
@@ -386,23 +391,23 @@ const commands = {
         }
     },
 
-	tag: {
-	    name: 'tag',
-	    description: 'This is how you use the tags you create.',
-	    usage: 'tag <tag name>',
-	    execute: function(bot, msg, args) {
-	        sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = ?`, args[0])).then(row => {
-	            if (row) {
-	                let message_content = msg.mentions.users.array().length === 1 ? `${msg.mentions.users.array()[0]} ${row.contents}` : row.contents;
-	                msg.edit(message_content);
-	            } else {
-	                msg.edit(`Could not find tag (${args[0]}).`).then(response => {
-	                    response.delete(1000);
-	                });
-	            }
-	        }).catch(console.error);
-	    }
-	},
+    tag: {
+        name: 'tag',
+        description: 'This is how you use the tags you create.',
+        usage: 'tag <tag name>',
+        execute: function(bot, msg, args) {
+            sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = ?`, args[0])).then(row => {
+                if (row) {
+                    let message_content = msg.mentions.users.array().length === 1 ? `${msg.mentions.users.array()[0]} ${row.contents}` : row.contents;
+                    msg.edit(message_content);
+                } else {
+                    msg.edit(`Could not find tag (${args[0]}).`).then(response => {
+                        response.delete(1000);
+                    });
+                }
+            }).catch(console.error);
+        }
+    },
 
     deltag: {
         name: 'deltag',
