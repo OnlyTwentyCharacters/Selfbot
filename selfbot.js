@@ -85,10 +85,10 @@ bot.on('message', msg => {
 	if (msg.content.startsWith(settings.prefix + 'trollmode')) {
 		if (trollmode === true) {
 			trollmode = false;
-			msg.edit('Trollmode disabled.').then(response => setTimeout(() => response.delete(), 500));
+			msg.edit('Trollmode disabled.').then(response => response.delete(1000));
 		} else {
 			trollmode = true;
-			msg.edit('Trollmode enabled.').then(response => setTimeout(() => response.delete(), 500));
+			msg.edit('Trollmode enabled.').then(response => response.delete(1000));
 		}
 	}
 
@@ -143,14 +143,14 @@ let reload = (msg) => {
 		cmdhandler = require('./cmdhandler.js');
 	} catch (err) {
 		msg.edit(`Problem loading cmdhandler.js: ${err}`).then(
-			response => setTimeout(() => response.delete(), 500)
+			response => response.delete(1000)
 		);
 		log(`Problem loading cmdhandler.js: ${err}`);
 	}
-	msg.edit('Module Reload Success!').then(
-		response => setTimeout(() => response.delete(), 500)
+	msg.edit('Commands reload was a success!').then(
+		response => response.delete(1000)
 	);
-	log('Module Reload Success!');
+	log('Commands reload was a success!');
 };
 
 let refreshsettings = (msg) => {

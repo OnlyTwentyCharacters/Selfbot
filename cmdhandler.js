@@ -76,15 +76,16 @@ const commands = {
 					sendhalp.push('\`\`\`');
 					msg.edit(sendhalp.join('\n'));
 				}
-
 			} else { //typical help command
 				let toSend = '';
 				let i = 0;
-				for (let key in commands) {
+				let sortedKeys = Object.keys(commands);
+				sortedKeys.sort();
+				for (let key in sortedKeys) {
 					if ((i % 3) == 0) {
-						toSend += `\n${Pad(toTitleCase(key), 12)}`;
+						toSend += `\n${Pad(toTitleCase(sortedKeys[key]), 12)}`;
 					} else {
-						toSend += `${Pad(toTitleCase(key), 12)}`;
+						toSend += `${Pad(toTitleCase(sortedKeys[key]), 12)}`;
 					}
 					i++;
 				}
@@ -168,6 +169,7 @@ const commands = {
 			let wins = pack.dependencies['winston'].split('^')[1];
 			let sqli = pack.dependencies['sqlite'].split('^')[1];
 			let botv = pack.version;
+			let auth = pack.author;
 			let message = [
 				'\`\`\`xl',
 				'STATISTICS',
@@ -177,7 +179,8 @@ const commands = {
 				`• Users		: ${bot.users.size}`,
 				`• Servers	  : ${bot.guilds.size}`,
 				`• Channels	 : ${bot.channels.size}`,
-				`• Discord.js   : ${djsv}`,
+				`• Discord.JS   : ${djsv}`,
+				`• Bot Author   : ${auth}`,
 				`• Bot Version  : ${botv}`,
 				`• Dependencies : Winston ${wins}, Moment ${mome}, SQLite ${sqli}`,
 				'\`\`\`'
@@ -196,11 +199,11 @@ const commands = {
 				pack = require('./package.json');
 			} catch (err) {
 				msg.edit(`Problem loading package.json: ${err}`).then(
-					response => setTimeout(() => response.delete(), 500)
+					response => response.delete(1000)
 				);
 			}
-			msg.edit('Module Reload Success!').then(
-				response => setTimeout(() => response.delete(), 500)
+			msg.edit('Package reload was a success!').then(
+				response => response.delete(1000)
 			);
 		}
 	},
@@ -221,8 +224,8 @@ const commands = {
 		execute: function (bot, msg, args) {
 			bot.user.setStatus(null, args.join(' ')).then(() => {
 				let text = args.join(' ') ? 'Game changed to ' + args.join(' ') : 'Game Cleared';
-				msg.edit(text).then(response => setTimeout(() => response.delete(), 500));
-			}).catch(error => msg.edit(error.message).then(response => setTimeout(() => response.delete(), 500)));
+				msg.edit(text).then(response => response.delete(1000));
+			}).catch(error => msg.edit(error.message).then(response => response.delete(1000)));
 		}
 	},
 
@@ -234,8 +237,8 @@ const commands = {
 		execute: function (bot, msg, args) {
 			msg.guild.member(bot.user).setNickname(args.join(' ')).then(() => {
 				let text = args.join(' ') ? 'Nickname changed to ' + args.join(' ') : 'Nickname Cleared';
-				msg.edit(text).then(response => setTimeout(() => response.delete(), 500));
-			}).catch(error => msg.edit(error.message).then(response => setTimeout(() => response.delete(), 500)));
+				msg.edit(text).then(response => response.delete(1000));
+			}).catch(error => msg.edit(error.message).then(response => response.delete(1000)));
 
 		}
 	},
@@ -250,8 +253,10 @@ const commands = {
 			a.prefix = newprefix;
 			// you get the point in here
 			fse.writeFileSync('settings.json', JSON.stringify(a, null, '\t'));
+
 			client.refreshsettings(msg);
-			msg.edit('Prefix set to: ' + newprefix);
+			client.reload(msg);
+			msg.edit('Prefix set to: ' + newprefix).then(response => response.delete(1000));
 		}
 	},
 
@@ -274,9 +279,9 @@ const commands = {
 
 		${msg_array[0].guild.name} - ${msg_array[0].channel.name}; ${moment(msg_array[0].timestamp).format('D[/]M[/]Y [@] HH:mm:ss')}`;
 					bot.channels.get(notes).sendMessage(lastresult).then(() =>
-						msg.edit('Pin added successfully').then(m => m.delete(3000))
+						msg.edit('Pin added successfully').then(m => m.delete(1000))
 					).catch(() => {
-						msg.edit('Could not find message!').then(m => m.delete(3000));
+						msg.edit('Could not find message!').then(m => m.delete(1000));
 					});
 				});
 			} else
@@ -293,9 +298,9 @@ const commands = {
 
 		${msg_array[0].guild.name} - ${msg_array[0].channel.name}; ${moment(msg_array[0].timestamp).format('D[/]M[/]Y [@] HH:mm:ss')}`;
 					bot.channels.get(notes).sendMessage(lastresult).then(() =>
-						msg.edit('Pin added successfully').then(m => m.delete(3000))
+						msg.edit('Pin added successfully').then(m => m.delete(1000))
 					).catch(() => {
-						msg.edit('Could not find message!').then(m => m.delete(3000));
+						msg.edit('Could not find message!').then(m => m.delete(1000));
 					});
 				});
 			} else {
@@ -306,9 +311,9 @@ const commands = {
 
 		${pinmessage.guild.name} - ${pinmessage.channel.name}; ${moment(pinmessage.timestamp).format('D[/]M[/]Y [@] HH:mm:ss')}`;
 				bot.channels.get(notes).sendMessage(result).then(() =>
-					msg.edit('Pin added successfully').then(m => m.delete(3000))
+					msg.edit('Pin added successfully').then(m => m.delete(1000))
 				).catch(() => {
-					msg.edit('Could not find message!').then(m => m.delete(3000));
+					msg.edit('Could not find message!').then(m => m.delete(1000));
 				});
 			}
 		}
@@ -403,20 +408,19 @@ const commands = {
 		execute: function (bot, msg, args) {
 			let name = args[0];
 			let contents = args.slice(1).join(' ');
-			sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = '${name}'`)).then(
-				row => {
-					if (!row) {
-						sql.run('INSERT INTO tags (name, contents) VALUES (?, ?', [name, contents]).then(() => {
-							msg.edit('Tag (' + name + ') was added').then(response => {
-								response.delete(1000);
-							});
-						}).catch(console.log());
-					} else {
-						msg.edit('Duplicate Tag (' + name + ') found.').then(response => {
+			sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = '${name}'`)).then(row => {
+				if (!row) {
+					sql.run('INSERT INTO tags (name, contents) VALUES (?, ?)', [name, contents]).then(() => {
+						msg.edit('Tag (' + name + ') was added').then(response => {
 							response.delete(1000);
-						}).catch(console.log());
-					}
-				});
+						});
+					}).catch(console.log);
+				} else {
+					msg.edit('Duplicate Tag (' + name + ') found.').then(response => {
+						response.delete(1000);
+					}).catch(console.log);
+				}
+			}).catch(console.log);
 		}
 	},
 

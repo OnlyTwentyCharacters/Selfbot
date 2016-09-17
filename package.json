@@ -1,6 +1,6 @@
 {
   "name": "selfbot",
-  "version": "2.7.1",
+  "version": "2.7.3",
   "description": "Typical Selfbot, give yourself some more commands.",
   "main": "selfbot.js",
   "repository": {
@@ -13,7 +13,7 @@
   "scripts": {
     "start": "pm2 start selfbot.js"
   },
-  "author": "YorkAARGH, LuckyEvie",
+  "author": "YorkAARGH",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^9.2.0",
