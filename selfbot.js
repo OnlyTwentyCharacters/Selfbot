@@ -2,7 +2,7 @@ const Discord = require('discord.js'),
 	bot = new Discord.Client({
 		fetch_all_members: true
 	});
-const settings = require('./settings.json');
+var settings = require('./settings.json');
 //const datastore = require('./fileloader.js');
 //const touch = require('touch');
 //const fse = require('fs-extra');
@@ -17,7 +17,6 @@ winston.remove(winston.transports.Console);
 var log = (msg) => {
 	bot.channels.get(settings.channelid).sendMessage(msg);
 };
-var prefix = settings.prefix;
 var trollmode = false;
 var hours = new Date().getHours();
 var minutes = new Date().getMinutes();
@@ -74,7 +73,7 @@ bot.on('message', msg => {
 	} else
 
 	if (msg.author !== bot.user) return;
-	if (!msg.content.startsWith(prefix)) return;
+	if (!msg.content.startsWith(settings.prefix)) return;
 
 	if (msg.content.split(' ').length === 1) {
 		sql.open('./selfbot.sqlite').then(() => sql.get('SELECT * FROM shortcuts WHERE name = ?', [msg.content.slice(1)])).then(row => {
@@ -83,7 +82,7 @@ bot.on('message', msg => {
 		}).catch(console.error);
 	} else
 
-	if (msg.content.startsWith(prefix + 'trollmode')) {
+	if (msg.content.startsWith(settings.prefix + 'trollmode')) {
 		if (trollmode === true) {
 			trollmode = false;
 			msg.edit('Trollmode disabled.').then(response => setTimeout(() => response.delete(), 500));
@@ -94,7 +93,7 @@ bot.on('message', msg => {
 	}
 
 
-	let cmdTxt = msg.content.split(' ')[0].replace(prefix, '').toLowerCase(),
+	let cmdTxt = msg.content.split(' ')[0].replace(settings.prefix, '').toLowerCase(),
 		args = msg.content.replace(/ {2,}/g, ' ').split(' ').slice(1);
 
 	let cmd;
@@ -154,7 +153,21 @@ let reload = (msg) => {
 	log('Module Reload Success!');
 };
 
+let refreshsettings = (msg) => {
+	delete require.cache[require.resolve('./settings.json')];
+	try {
+		settings = require('./settings.json');
+	} catch (err) {
+		msg.edit(`Problem loading settings.json: ${err}`).then(
+			response => response.delete(1000)
+		);
+	}
+	msg.edit('Settings reload was a success!').then(
+		response => response.delete(1000)
+	);
+};
 
 bot.login(settings.token);
 
 exports.reload = reload;
+exports.refreshsettings = refreshsettings;

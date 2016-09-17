@@ -1,7 +1,5 @@
 const client = require('./selfbot.js');
 const insult = require('./insult-generator.js');
-const settings = require('./settings.json');
-const pack = require('./package.json');
 //const touch = require('touch');
 const fse = require('fs-extra');
 const moment = require('moment');
@@ -11,6 +9,8 @@ const util = require('util');
 const Pad = (str, l) => {
 	return str + Array(l - str.length + 1).join(' ');
 };
+
+var pack = require('./package.json');
 
 function GetUptime() {
 	let sec_num = parseInt(process.uptime(), 10);
@@ -48,7 +48,7 @@ const commands = {
 		name: 'ping',
 		description: 'This is a standard response command.',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			msg.edit(`Pong! \`${new Date().getTime() - msg.timestamp}\` ms`);
 		}
 	},
@@ -57,7 +57,7 @@ const commands = {
 		name: 'help',
 		description: 'This will bring up information about the commands you want help with.',
 		usage: 'help <command>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			let sendhalp = [];
 			let command = args[0];
 			if (command) {
@@ -88,7 +88,7 @@ const commands = {
 					}
 					i++;
 				}
-				msg.edit(`\`\`\`xl\nThis is a list of commands available to you, to get more info just do ${settings.prefix}help <command>\n ${toSend} \n\`\`\``);
+				msg.edit(`\`\`\`xl\nThis is a list of commands available to you, to get more info just do ${client.settings.prefix}help <command>\n ${toSend} \n\`\`\``);
 			}
 		}
 	},
@@ -98,61 +98,61 @@ const commands = {
 		description: 'Appends [is AFK] to the nickname',
 		usage: '',
 		permissions: ['CHANGE_NICKNAME'],
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			let nickname = msg.guild.member(bot.user).nickname;
 			let username = msg.guild.member(bot.user).user.username;
 			if (!nickname) {
 				msg.guild.member(bot.user).setNickname(username + ' [is AFK]').then(() => {
 					msg.edit('Set to away from keyboard').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else
 
 			if (nickname.search(' [is AFK]')) {
 				msg.guild.member(bot.user).setNickname('').then(() => {
 					msg.edit('No longer AFK').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else
 
 			if (nickname && !nickname.includes(' [is AFK]')) {
 				msg.guild.member(bot.user).setNickname(nickname + ' [is AFK]').then(() => {
 					msg.edit('Set to Away From Keyboard').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else if (nickname.search(' [is AFK]')) {
 				msg.guild.member(bot.user).setNickname(nickname.replace(/ \[AFK\]/g, '')).then(() => {
 					msg.edit('No longer AFK').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			}
 		}
 	},
 
-	sleeping: {
-		name: 'sleeping',
+	sleep: {
+		name: 'sleep',
 		description: 'Appends [is sleeping] to the nickname',
 		usage: '',
 		permissions: ['CHANGE_NICKNAME'],
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			let nickname = msg.guild.member(bot.user).nickname;
 			let username = msg.guild.member(bot.user).user.username;
 			if (!nickname) {
 				msg.guild.member(bot.user).setNickname(username + ' [is sleeping]').then(() => {
 					msg.edit('Set to sleeping').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else
 
 			if (nickname.search(' [is sleeping]')) {
 				msg.guild.member(bot.user).setNickname('').then(() => {
 					msg.edit('No longer sleeping').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else
 
 			if (nickname && !nickname.includes(' [is sleeping]')) {
 				msg.guild.member(bot.user).setNickname(nickname + ' [is sleeping]').then(() => {
 					msg.edit('Set to sleeping').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			} else if (nickname.search(' [is sleeping]')) {
 				msg.guild.member(bot.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, '')).then(() => {
 					msg.edit('No longer sleeping').then(response => response.delete(1000));
-				}).catch(error => msg.channel.get(settings.channelid).sendMessage(error.message));
+				}).catch(error => msg.channel.get(client.settings.channelid).sendMessage(error.message));
 			}
 		}
 	},
@@ -161,7 +161,7 @@ const commands = {
 		name: 'info',
 		description: 'Displays information such as memory usage, how long it has been running for, size of guilds/members/channels and when it launched.',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			let uptime = GetUptime();
 			let djsv = pack.dependencies['discord.js'].split('^')[1];
 			let mome = pack.dependencies['moment'].split('^')[1];
@@ -177,12 +177,31 @@ const commands = {
 				`• Users		: ${bot.users.size}`,
 				`• Servers	  : ${bot.guilds.size}`,
 				`• Channels	 : ${bot.channels.size}`,
-				`• Discord.js   : v${djsv}`,
-				`• Bot Version  : v${botv}`,
-				`• Dependencies : Winston v${wins}, Moment v${mome}, SQLite3 v${sqli}`,
+				`• Discord.js   : ${djsv}`,
+				`• Bot Version  : ${botv}`,
+				`• Dependencies : Winston ${wins}, Moment ${mome}, SQLite ${sqli}`,
 				'\`\`\`'
 			];
 			msg.edit(message.join('\n'));
+		}
+	},
+
+	refresh: {
+		name: 'refresh',
+		description: 'Refreshes the package.json file.',
+		usage: '',
+		execute: function (bot, msg) {
+			delete require.cache[require.resolve('./package.json')];
+			try {
+				pack = require('./package.json');
+			} catch (err) {
+				msg.edit(`Problem loading package.json: ${err}`).then(
+					response => setTimeout(() => response.delete(), 500)
+				);
+			}
+			msg.edit('Module Reload Success!').then(
+				response => setTimeout(() => response.delete(), 500)
+			);
 		}
 	},
 
@@ -190,7 +209,7 @@ const commands = {
 		name: 'Reload',
 		description: 'This reloads all of the commands without having to reboot the bot itself.',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			client.reload(msg);
 		}
 	},
@@ -199,7 +218,7 @@ const commands = {
 		name: 'setgame',
 		description: 'Sets the clients game',
 		usage: 'setgame <game>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			bot.user.setStatus(null, args.join(' ')).then(() => {
 				let text = args.join(' ') ? 'Game changed to ' + args.join(' ') : 'Game Cleared';
 				msg.edit(text).then(response => setTimeout(() => response.delete(), 500));
@@ -212,7 +231,7 @@ const commands = {
 		description: 'Applies or clears a nickname',
 		usage: 'setnick <nickname>',
 		permissions: ['CHANGE_NICKNAME'],
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			msg.guild.member(bot.user).setNickname(args.join(' ')).then(() => {
 				let text = args.join(' ') ? 'Nickname changed to ' + args.join(' ') : 'Nickname Cleared';
 				msg.edit(text).then(response => setTimeout(() => response.delete(), 500));
@@ -225,13 +244,13 @@ const commands = {
 		name: 'setprefix',
 		description: 'Changes the command prefix',
 		usage: 'setprefix <new prefix>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			var a = JSON.parse(fse.readFileSync('settings.json'));
-
 			var newprefix = args[0];
 			a.prefix = newprefix;
 			// you get the point in here
 			fse.writeFileSync('settings.json', JSON.stringify(a, null, '\t'));
+			client.refreshsettings(msg);
 			msg.edit('Prefix set to: ' + newprefix);
 		}
 	},
@@ -240,8 +259,8 @@ const commands = {
 		name: 'pin',
 		description: 'This emulates the pin message functionality native to discord.',
 		usage: 'pin <message ID>, <last> or <mention last>',
-		execute: function(bot, msg, args) {
-			const notes = settings.pinchannel;
+		execute: function (bot, msg, args) {
+			const notes = client.settings.pinchannel;
 
 			if (isNaN(args[0]) && args[0] === ('last')) {
 				msg.channel.fetchMessages({
@@ -299,7 +318,7 @@ const commands = {
 		name: 'shame',
 		description: 'Based on the Shame bell from Game Of Thrones, this command will tag a user and shame them with bells',
 		usage: 'shame <mention>',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			if (!msg.mentions.users) {
 				msg.edit('You\'ve gotta mention someone to shame them!').then(response => {
 					setTimeout(() => response.delete(), 1000);
@@ -314,7 +333,7 @@ const commands = {
 		name: 'insult',
 		description: 'One of the worlds best features, a truly random insult generator.',
 		usage: 'insult <mention>',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			if (!msg.mentions.users.array()[0]) {
 				msg.edit('You need to @mention someone to insult them... idiot').then(response => {
 					setTimeout(() => response.delete(), 1000);
@@ -338,7 +357,7 @@ const commands = {
 		name: 'prune',
 		description: 'This will clear the quantity of messages that you specified',
 		usage: 'prune <quantity>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			let messagecount = parseInt(args) ? parseInt(args[0]) : 1;
 			msg.channel.fetchMessages({
 				limit: 100
@@ -357,7 +376,7 @@ const commands = {
 		description: 'This is the bigger and meaner sibling of prune, this will delete any messages within the quantity you specified.',
 		usage: 'purge <quantity>',
 		permissions: ['MANAGE_MESSAGES', 'READ_MESSAGE_HISTORY'],
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			let messagecount = parseInt(args);
 			msg.channel.fetchMessages({
 				limit: messagecount
@@ -372,7 +391,7 @@ const commands = {
 		name: 'gfy',
 		description: 'Let me Google that for you!',
 		usage: 'gfy <search term>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			msg.edit('http://lmgtfy.com?q=' + args.join('+'));
 		}
 	},
@@ -381,7 +400,7 @@ const commands = {
 		name: 'addtag',
 		description: 'This will add a tag (Kinda like a custom emote) to the database, and it supports multiple lines as well!',
 		usage: 'addtag <name> <contents>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			let name = args[0];
 			let contents = args.slice(1).join(' ');
 			sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM tags WHERE name = '${name}'`)).then(
@@ -405,7 +424,7 @@ const commands = {
 		name: 'tag',
 		description: 'This is how you use the tags you create.',
 		usage: 'tag <tag name>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			sql.open('./selfbot.sqlite').then(() => sql.get('SELECT * FROM tags WHERE name = ?', args[0])).then(row => {
 				if (row) {
 					let message_content = msg.mentions.users.array().length === 1 ? `${msg.mentions.users.array()[0]} ${row.contents}` : row.contents;
@@ -423,7 +442,7 @@ const commands = {
 		name: 'deltag',
 		description: 'If you want to remove a tag this is the command for you!',
 		usage: 'deltag <tag name>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			sql.open('./selfbot.sqlite').then(() => {
 				sql.run('DELETE FROM tags WHERE name = ?', args[0])
 					.then(() => {
@@ -440,7 +459,7 @@ const commands = {
 		name: 'taglist',
 		description: 'Use this if you want to display all the tags you have stored.',
 		usage: 'taglist',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			sql.open('./selfbot.sqlite').then(() => sql.all('SELECT * FROM tags')).then(rows => {
 
 				msg.edit('Tags: ' + rows.map(r => r.name).join(', ')).then(response =>
@@ -454,7 +473,7 @@ const commands = {
 		name: 'addslash',
 		description: 'This will add a new "slash" command, like /shrug on the discord PC client, it supports multiple lines as well!',
 		usage: 'addslash <name> <contents>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			var name = args[0];
 			var contents = args.slice(1).join(' ');
 			sql.open('./selfbot.sqlite').then(() => sql.get(`SELECT * FROM shortcuts WHERE name = '${name}'`)).then(
@@ -478,7 +497,7 @@ const commands = {
 		name: 'delslash',
 		description: 'If you want to delete a tag, this is the command you would need',
 		usage: 'delslash <name>',
-		execute: function(bot, msg, args) {
+		execute: function (bot, msg, args) {
 			sql.open('./selfbot.sqlite').then(() => {
 				sql.run('DELETE FROM shortcuts WHERE name = ?', args[0])
 					.then(() => {
@@ -495,16 +514,16 @@ const commands = {
 		name: 'slashes',
 		description: 'Displays all slash commands',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			sql.open('./selfbot.sqlite').then(() => sql.all('SELECT * FROM shortcuts')).then(rows => {
 				let message = [];
 				message.push('\`\`\`xl');
-				var longest = rows.reduce(function(a, b) {
+				var longest = rows.reduce(function (a, b) {
 					return a.name.length > b.name.length ? a : b;
 				});
 				rows.map(row => {
 					let padded = (row.name + ' '.repeat(longest.name.length + 1 - row.name.length));
-					message.push(`${settings.prefix}${padded}: ${row.contents}`);
+					message.push(`${client.settings.prefix}${padded}: ${row.contents}`);
 				});
 				message.push('\`\`\`');
 				msg.edit(message).then(response =>
@@ -516,9 +535,9 @@ const commands = {
 
 	eval: {
 		name: 'eval',
-		description: '',
+		description: 'Evaluate and execute JavaScript code and expressions, very powerful be careful when using this',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			let suffix = msg.content.slice(6);
 
 			try {
@@ -573,7 +592,7 @@ const commands = {
 		name: 'reboot',
 		description: 'This will make your bot exit cleanly, and if you are using PM2, Forver or a similar module, it will restart it.',
 		usage: '',
-		execute: function(bot, msg) {
+		execute: function (bot, msg) {
 			msg.edit('Rebooting...').then(() => {
 				winston.log('info', 'Reboot started.');
 				process.exit();
@@ -584,7 +603,7 @@ const commands = {
 };
 
 function clean(text) {
-	if (typeof(text) === 'string') {
+	if (typeof (text) === 'string') {
 		return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
 	} else {
 		return text;
@@ -592,7 +611,7 @@ function clean(text) {
 }
 
 const toTitleCase = (str) => {
-	return str.replace(/\w\S*/g, function(txt) {
+	return str.replace(/\w\S*/g, function (txt) {
 		return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
 	});
 };
