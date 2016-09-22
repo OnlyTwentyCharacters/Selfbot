@@ -17,7 +17,7 @@ winston.remove(winston.transports.Console);
 var log = (msg) => {
 	bot.channels.get(settings.channelid).sendMessage(msg);
 };
-var trollmode = false;
+//var trollmode = false;
 var hours = new Date().getHours();
 var minutes = new Date().getMinutes();
 
@@ -60,17 +60,17 @@ let cmdhandler = require('./cmdhandler.js');
 bot.on('message', msg => {
 
 
-	if (msg.content.startsWith('```js') && msg.content.endsWith('```')) {
-		var zerospace = msg.content.split(' ').slice(0).join(' \u200B');
-		var zerowidthcode = [
-			`${zerospace}`
-		];
-		if (trollmode === true) {
-			msg.edit(zerowidthcode.join('\n'));
-		} else {
-			return;
-		}
-	} else
+	// if (msg.content.startsWith('```js') && msg.content.endsWith('```')) {
+	// 	var zerospace = msg.content.split(' ').slice(0).join(' \u200B');
+	// 	var zerowidthcode = [
+	// 		`${zerospace}`
+	// 	];
+	// 	if (trollmode === true) {
+	// 		msg.edit(zerowidthcode.join('\n'));
+	// 	} else {
+	// 		return;
+	// 	}
+	// } else
 
 	if (msg.author !== bot.user) return;
 	if (!msg.content.startsWith(settings.prefix)) return;
@@ -80,17 +80,17 @@ bot.on('message', msg => {
 			if (!row) return;
 			msg.edit(row.contents);
 		}).catch(console.error);
-	} else
-
-	if (msg.content.startsWith(settings.prefix + 'trollmode')) {
-		if (trollmode === true) {
-			trollmode = false;
-			msg.edit('Trollmode disabled.').then(response => response.delete(1000));
-		} else {
-			trollmode = true;
-			msg.edit('Trollmode enabled.').then(response => response.delete(1000));
-		}
-	}
+	} //else
+// exports.trollmode;
+// 	if (msg.content.startsWith(settings.prefix + 'trollmode')) {
+// 		if (trollmode === true) {
+// 			trollmode = false;
+// 			msg.edit('Trollmode disabled.').then(response => response.delete(1000));
+// 		} else {
+// 			trollmode = true;
+// 			msg.edit('Trollmode enabled.').then(response => response.delete(1000));
+// 		}
+// 	}
 
 
 	let cmdTxt = msg.content.split(' ')[0].replace(settings.prefix, '').toLowerCase(),

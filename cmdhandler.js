@@ -38,8 +38,7 @@ const aliases = {
 	'rld': 'reload',
 	'brb': 'afk',
 	'away': 'afk',
-	'sleep': 'sleeping',
-	'gone': 'sleeping'
+	'gone': 'sleep'
 };
 
 const commands = {
@@ -248,15 +247,16 @@ const commands = {
 		description: 'Changes the command prefix',
 		usage: 'setprefix <new prefix>',
 		execute: function (bot, msg, args) {
-			var a = JSON.parse(fse.readFileSync('settings.json'));
-			var newprefix = args[0];
-			a.prefix = newprefix;
-			// you get the point in here
-			fse.writeFileSync('settings.json', JSON.stringify(a, null, '\t'));
-
-			client.refreshsettings(msg);
+			//set prefix
+			var settings = JSON.parse(fse.readFileSync('settings.json'));
+			settings.prefix = args[0];
+			//save changes to json
+			fse.writeFileSync('settings.json', JSON.stringify(settings, null, '\t'));
+			//reload the command file
 			client.reload(msg);
-			msg.edit('Prefix set to: ' + newprefix).then(response => response.delete(1000));
+			client.refreshsettings(msg);
+			//give feedback
+			msg.edit('Prefix set to: ' + settings.prefix).then(response => response.delete(1000));
 		}
 	},
 
@@ -389,15 +389,6 @@ const commands = {
 				.then(messages => {
 					messages.map(m => m.delete().catch(console.error));
 				});
-		}
-	},
-
-	gfy: {
-		name: 'gfy',
-		description: 'Let me Google that for you!',
-		usage: 'gfy <search term>',
-		execute: function (bot, msg, args) {
-			msg.edit('http://lmgtfy.com?q=' + args.join('+'));
 		}
 	},
 
