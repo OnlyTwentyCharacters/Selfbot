@@ -252,6 +252,8 @@ var commands = {
 				`• Users		: ${client.users.size}`,
 				`• Servers	  : ${client.guilds.size}`,
 				`• Channels	 : ${client.channels.size}`,
+				'',
+				'BOT INFORMATION',
 				`• Discord.JS   : ${djsv}`,
 				`• Bot Author   : ${auth}`,
 				`• Bot Version  : ${botv}`,
@@ -523,7 +525,6 @@ var commands = {
 		usage: 'taglist',
 		execute: function (bot, msg) {
 			sql.open('./selfbot.sqlite').then(() => sql.all('SELECT * FROM tags')).then(rows => {
-
 				msg.edit('Tags: ' + rows.map(r => r.name).join(', ')).then(response =>
 					response.delete(5000)
 				);

@@ -1,6 +1,6 @@
 {
   "name": "selfbot",
-  "version": "1.0.0",
+  "version": "2.8.3",
   "description": "Typical Selfbot, give yourself some more commands.",
   "main": "bot_self.js",
   "repository": {
@@ -14,9 +14,10 @@
     "start": "pm2 start bot_self.js"
   },
   "author": "York#9528",
-  "license": "ISC",
+  "contributors":"AoDude#8676",
+  "license": "MIT",
   "dependencies": {
-    "discord.js": "^9.2.0",
+    "discord.js": "^9.3.0",
     "fs-promise": "^0.5.0",
     "moment": "^2.15.1",
     "sqlite": "^2.2.0",
