@@ -2,6 +2,7 @@
 /node_modules/
 /logs/
 /sprites/
+/backup/
 
 # File Extensions
 *.log
