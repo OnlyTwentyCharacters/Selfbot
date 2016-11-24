@@ -1,6 +1,6 @@
 {
   "name": "selfbot",
-  "version": "3.0.0",
+  "version": "3.5.0",
   "description": "Typical Selfbot, give yourself some more commands.",
   "main": "bot_self.js",
   "repository": {

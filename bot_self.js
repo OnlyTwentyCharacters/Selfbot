@@ -59,7 +59,7 @@ client.on('message', message => {
 		sql.open('./selfbot.sqlite').then(() => sql.get('SELECT * FROM shortcuts WHERE name = ?', [message.content.slice(1)])).then(row => {
 			if (!row) return;
 			message.edit(row.contents).catch(error => console.log(error.stack));
-		}).catch(error => winston.log('error', error.stack));
+		}).catch(error => console.log(error.stack));
 	}
 
 	let cmdTxt = message.content.split(' ')[0].replace(cmdhandler.settings.prefix, '').toLowerCase(),
@@ -99,14 +99,12 @@ client.on('reconnecting', () => {
 	let date = new Date().toLocaleDateString();
 	let time = new Date().toLocaleTimeString();
 	log(`Reconnected at ${date} @ ${time}`);
-	winston.info(`Reconnected at ${date} @ ${time}`);
 });
 
 client.on('disconnect', () => {
 	let date = new Date().toLocaleDateString();
 	let time = new Date().toLocaleTimeString();
 	console.log(`Disconnected on the ${date}, at ${time}, attempting to reconnect`);
-	winston.info(`Disconnected on the ${date}, at ${time}, attempting to reconnect`);
 });
 
 let reload = (message) => {
@@ -114,14 +112,14 @@ let reload = (message) => {
 	try {
 		cmdhandler = require('./bot_self_commands.js');
 	} catch (err) {
-		message.channel.sendMessage(`Problem loading bot_self_commands.js: ${err}`).then(
-			response => response.delete(1000).catch(error => winston.log('error', error.stack))
-		).catch(error => winston.log('error', error.stack));
+		message.edit(`Problem loading bot_self_commands.js: ${err}`).then(
+			response => response.delete(1000).catch(error => console.log(error.stack))
+		).catch(error => console.log(error.stack));
 		log(`Problem loading bot_self_commands.js: ${err}`);
 	}
-	message.channel.sendMessage('Commands reload was a success!').then(
-		response => response.delete(1000).catch(error => winston.log('error', error.stack))
-	).catch(error => winston.log('error', error.stack));
+	message.edit('Commands reload was a success!').then(
+		response => response.delete(1000).catch(error => console.log(error.stack))
+	).catch(error => console.log(error.stack));
 	log('Commands reload was a success!');
 };
 
@@ -150,5 +148,5 @@ exports.log = log;
 exports.MemoryUsing = MemoryUsing;
 exports.token = token;
 process.on('unhandledRejection', err => {
-	console.error('Uncaught Promise Error: \n' + err.stack);
+	console.error('Uncaught Promise Error: \n' + err);
 });

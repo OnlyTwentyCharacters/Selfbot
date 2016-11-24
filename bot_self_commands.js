@@ -55,8 +55,33 @@ var commands = {
 					if (err) return message.reply(err);
 					let root = HTMLParser.parse(res.text);
 					let article = root.querySelector('.post.article .fmllink');
-					message.edit(article.childNodes[0].text);
+					message.edit(article.childNodes[0].text).catch(error => console.log(error.stack));
 				});
+		}
+	},
+
+	spy: {
+		name: 'spy',
+		description:'',
+		usage: '',
+		alias: '',
+		execute: function(client, message, args) {
+			console.log('Args: ' + args.join(' '));
+			var fetchUser = client.users.find('username', args.join(' ')).catch(error => console.log(error.stack));
+			console.log('fetchUser: ' + fetchUser);
+			let ui_name = client.guilds.get(message.guild.id).members.get(fetchUser.id).catch(error => console.log(error.stack));
+			console.log(ui_name);
+			let spymsg = [
+				'USER INFO',
+				`User ID      : ${ui_name.user.id}`,
+				`Nickname     : ${ui_name.nickname}`,
+				`Username     : ${ui_name.user.username}`,
+				`Discrim	  : ${ui_name.user.discriminator}`,
+				`Bot          : ${ui_name.user.bot}`,
+				`Joined       : ${ui_name.joinedTimestamp}`,
+			];
+			message.delete().catch(error => console.log(error.stack));
+			message.channel.sendCode('LDIF', spymsg).catch(error => console.log(error.stack));
 		}
 	},
 
@@ -66,7 +91,7 @@ var commands = {
 		usage: '',
 		alias: 'p',
 		execute: function(client, message) {
-			message.edit(`Pong! \`${new Date().getTime() - message.timestamp}\` ms`).then(m => m.delete(10000)).catch(error => bot.winston.info(error.stack));
+			message.edit(`Pong! \`${new Date().getTime() - message.createdTimestamp}\` ms`).then(m => m.delete(10000)).catch(error => console.log(error.stack));
 		}
 	},
 
@@ -93,7 +118,7 @@ var commands = {
 						sendhelp.push(`Permissions: ${commands[command].permissions}`);
 					}
 					sendhelp.push('\`\`\`');
-					message.edit(sendhelp).then(m => m.delete(10000)).catch(error => bot.winston.error(error.stack));
+					message.edit(sendhelp).then(m => m.delete(10000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 				}
 			} else {
 				let toSend = '';
@@ -108,8 +133,8 @@ var commands = {
 					}
 					i++;
 				}
-				message.edit(`\`\`\`LDIF\nThis is a list of commands available to you, to get more info just do ${settings.prefix}help <command>\n ${toSend} \n\`\`\``).then(m => m.delete(10000))
-					.catch(error => bot.winston.error(error.stack));
+				message.edit(`\`\`\`LDIF\nThis is a list of commands available to you, to get more info just do ${settings.prefix}help <command>\n ${toSend} \n\`\`\``).then(m => m.delete(10000).catch(error => console.log(error.stack)))
+					.catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -131,11 +156,11 @@ var commands = {
 					let lastresult = `:pushpin: ${message_array[0].content} - ${moment(message_array[0].timestamp).format('D[/]M[/]Y [@] HH:mm:ss')} by **${message_array[0].author.username}** in #${message_array[0].channel.name}`;
 
 					client.channels.get(notes).sendMessage(lastresult).then(() =>
-						message.edit('Pin added successfully').then(m => m.delete(1000))
+						message.edit('Pin added successfully').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack))
 					).catch(() => {
-						message.edit('Could not find message!').then(m => m.delete(1000));
+						message.edit('Could not find message!').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 					});
-				});
+				}).catch(error => console.log(error.stack));
 			} else
 
 			if (message.mentions.users && args[1] === ('last')) {
@@ -146,11 +171,11 @@ var commands = {
 					message_array = message_array.filter(m => m.author.id === message.mentions.users.array()[0].id);
 					let lastresult = `:pushpin: ${message_array[0].content} - ${moment(message_array[0].timestamp).format('D[/]M[/]Y [@] HH:mm:ss')} by **${message_array[0].author.username}** in #${message_array[0].channel.name}`;
 					client.channels.get(notes).sendMessage(lastresult).then(() =>
-						message.edit('Pin added successfully').then(m => m.delete(1000))
+						message.edit('Pin added successfully').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack))
 					).catch(() => {
-						message.edit('Could not find message!').then(m => m.delete(1000));
+						message.edit('Could not find message!').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 					});
-				});
+				}).catch(error => console.log(error.stack));
 			} else {
 				message.channel.fetchMessages({
 					around: args[0]
@@ -158,9 +183,9 @@ var commands = {
 					let result = messages.filter(e => e.id == args[0]).first();
 					let final = `:pushpin: ${result.content} - ${moment(result.timestamp).format('D[/]M[/]Y [@] HH:mm:ss')} by **${result.author.username}** in #${result.channel.name}`;
 					client.channels.get(notes).sendMessage(final).then(() =>
-						message.edit('Pin added successfully').then(m => m.delete(1000))
+						message.edit('Pin added successfully').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack))
 					).catch(() => {
-						message.edit('Could not find message!').then(m => m.delete(1000));
+						message.edit('Could not find message!').then(m => m.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 					});
 				}).catch(error => console.log(error.stack));
 
@@ -180,24 +205,24 @@ var commands = {
 			let username = message.guild.member(client.user).user.username;
 			if (!nickname) {
 				message.guild.member(client.user).setNickname(username + ' [is AFK]').then(() => {
-					message.edit('Set to away from keyboard').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('Set to away from keyboard').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else
 
 			if (nickname.search(' [is AFK]')) {
 				message.guild.member(client.user).setNickname('').then(() => {
-					message.edit('No longer AFK').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('No longer AFK').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else
 
 			if (nickname && !nickname.includes(' [is AFK]')) {
 				message.guild.member(client.user).setNickname(nickname + ' [is AFK]').then(() => {
-					message.edit('Set to Away From Keyboard').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('Set to Away From Keyboard').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else if (nickname.search(' [is AFK]')) {
 				message.guild.member(client.user).setNickname(nickname.replace(/ \[AFK\]/g, '')).then(() => {
-					message.edit('No longer AFK').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('No longer AFK').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -213,24 +238,24 @@ var commands = {
 			let username = message.guild.member(client.user).user.username;
 			if (!nickname) {
 				message.guild.member(client.user).setNickname(username + ' [is sleeping]').then(() => {
-					message.edit('Set to sleeping').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('Set to sleeping').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else
 
 			if (nickname.search(' [is sleeping]')) {
 				message.guild.member(client.user).setNickname('').then(() => {
-					message.edit('No longer sleeping').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('No longer sleeping').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else
 
 			if (nickname && !nickname.includes(' [is sleeping]')) {
 				message.guild.member(client.user).setNickname(nickname + ' [is sleeping]').then(() => {
-					message.edit('Set to sleeping').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+					message.edit('Set to sleeping').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			} else if (nickname.search(' [is sleeping]')) {
-				message.guild.member(client.user).setNickname(nickname.replace(/ \[SLEEPING\]/g, '')).then(() => {
-					message.edit('No longer sleeping').then(response => response.delete(1000));
-				}).catch(error => bot.winston.info(error.stack));
+				message.guild.member(client.user).setNickname(nickname.replace(/ \[is sleeping\]/g, '')).then(() => {
+					message.edit('No longer sleeping').then(response => response.delete(1000).catch(error => console.log(error.stack)));
+				}).catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -241,25 +266,62 @@ var commands = {
 		usage: '',
 		alias: 'stats',
 		execute: function(client, message) {
-			let uptime = moment.duration(client.uptime).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]');
-			let infomsg = [
-				'\`\`\`LDIF',
-				'STATISTICS',
-				`Mem Usage	: ${bot.MemoryUsing}`,
-				`Uptime	   : ${uptime}`,
-				`Started	  : ${bot.date} @ ${bot.time}`,
-				`Users		: ${client.users.size}`,
-				`Servers	  : ${client.guilds.size}`,
-				`Channels	 : ${client.channels.size}`,
-				'',
-				'BOT INFORMATION',
-				`Discord.JS   : ${pack.dependencies['discord.js'].split('^')[1]}`,
-				`Bot Author   : ${pack.author}`,
-				`Bot Version  : ${pack.version}`,
-				`Dependencies : Winston ${pack.dependencies['winston'].split('^')[1]}, Moment ${pack.dependencies['moment'].split('^')[1]}, SQLite ${pack.dependencies['sqlite'].split('^')[1]}`,
-				'\`\`\`'
-			];
-			message.edit(infomsg).then(m => m.delete(10000)).catch(error => bot.winston.info(error.stack));
+			let deps = require('./package.json').dependencies;
+			let embed = {
+				color: 0xFF9900,
+				description: '**Selfbot Statistics**\n',
+				fields: [
+					{
+						name: '❯ Uptime',
+						value: moment.duration(client.uptime).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]'),
+						inline: false
+					},
+					{
+						name: '❯ Launched',
+						value: `${bot.date} @ ${bot.time}`,
+						inline: true
+					},
+					{
+						name: '❯ Memory usage',
+						value: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
+						inline: true
+					},
+					{
+						name: '❯ Version',
+						value: pack.version,
+						inline: true
+					},
+					{
+						name:  '❯ Installed Packages',
+						value: '\u200B',
+						inline: false
+					}
+				],
+				timestamp: new Date(),
+				footer: {
+					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
+					text: 'Statistics'
+				}
+			};
+			for (key in deps) {
+				embed.fields.push({
+					name: `**${key}**`,
+					value: deps[key].replace('^','').replace('github:hydrabolt/discord.js#', ''),
+					inline: true
+				});
+			}
+			embed.fields.push(
+				{
+					name: '❯ Source Code',
+					value: '[GitHub](https://github.com/YorkAARGH/Selfbot)'
+				},
+				{
+					name: '\u200B',
+					value: '\u200B'
+				}
+			);
+			message.edit('', {embed}).catch(error => console.log(error));
+			//message.edit(infomsg).then(m => m.delete(10000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 		}
 	},
 
@@ -271,8 +333,8 @@ var commands = {
 		execute: function(client, message) {
 			if (!message.mentions.users.first()) {
 				message.edit('You need to @mention someone to insult them... idiot')
-					.then(response => response.delete(1000))
-					.catch(error => bot.winston.info(error.stack));
+					.then(response => response.delete(1000).catch(error => console.log(error.stack)))
+					.catch(error => console.log(error.stack));
 			} else {
 				message.edit(message.mentions.users.first() + ', You know what? You\'re nothing but ' +
 					insult.start[
@@ -283,7 +345,7 @@ var commands = {
 					] + ' ' +
 					insult.end[
 						Math.floor(Math.random() * insult.end.length)
-					] + '.').catch(error => bot.winston.info(error.stack));
+					] + '.').catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -310,7 +372,7 @@ var commands = {
 			}
 			client.user.setGame(result).then(() => {
 				let text = result ? 'Game changed to ' + result : 'Game Cleared';
-				message.edit(text).then(response => response.delete(1000));
+				message.edit(text).then(response => response.delete(1000).catch(error => console.log(error.stack)));
 			}).catch(error => console.log(error.stack));
 		}
 	},
@@ -324,8 +386,8 @@ var commands = {
 		execute: function(client, message, args) {
 			message.guild.member(client.user).setNickname(args.join(' ')).then(() => {
 				let text = args.join(' ') ? 'Nickname changed to ' + args.join(' ') : 'Nickname Cleared';
-				message.edit(text).then(response => response.delete(1000));
-			}).catch(error => bot.winston.info(error.stack));
+				message.edit(text).then(response => response.delete(1000).catch(error => console.log(error.stack)));
+			}).catch(error => console.log(error.stack));
 
 		}
 	},
@@ -340,14 +402,14 @@ var commands = {
 			var settingsFile = require('./settings.json'); //or whatever local path
 			settingsFile.prefix = args[0];
 			//save changes to json
-			fse.writeFileSync('settings.json', JSON.stringify(settingsFile, null, '\t'));
+			fse.writeFileSync('settings.json', JSON.stringify(settingsFile, null, '\t')).catch(error => console.log(error.stack));
 			settingsFile = require('./settings.json'); // reload it from file again because you weren't actually having it update with the changed values
 			//reload the command file
 			bot.reload(message);
 			//give feedback
 			message.edit('Prefix set to: ' + settingsFile.prefix)
-				.then(response => response.delete(1000))
-				.catch(error => bot.winston.info(error.stack));
+				.then(response => response.delete(1000).catch(error => console.log(error.stack)))
+				.catch(error => console.log(error.stack));
 			settingsFile = null;
 		}
 	},
@@ -361,8 +423,8 @@ var commands = {
 			let note = args.join(' ');
 			client.channels.get(settings.notchannel).sendMessage('***TODO: ***' + note)
 			.then(message.edit('Posted successfully.')
-			.then(message.delete(1000)))
-			.catch(error => bot.winston.info(error.stack));
+			.then(message.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack)))
+			.catch(error => console.log(error.stack));
 		}
 	},
 
@@ -374,11 +436,11 @@ var commands = {
 		execute: function(client, message) {
 			if (!message.mentions.users.first()) {
 				message.edit('You need to @mention someone to shame them')
-					.then(response => response.delete(1000))
-					.catch(error => bot.winston.info(error.stack));
+					.then(response => response.delete(1000).catch(error => console.log(error.stack)))
+					.catch(error => console.log(error.stack));
 			} else {
 				message.edit('SHAME :bell: ' + message.mentions.users.first() + ' :bell: SHAME')
-					.catch(error => bot.winston.info(error.stack));
+					.catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -398,7 +460,7 @@ var commands = {
 					msg_array = msg_array.filter(m => m.author.id === client.user.id);
 					msg_array.length = messagecount + 1;
 					msg_array.map(m => m.delete()
-						.catch(error => bot.winston.info(error.stack)));
+						.catch(error => console.log(error.stack)));
 				});
 		}
 	},
@@ -416,7 +478,7 @@ var commands = {
 			})
 				.then(messages => {
 					messages.map(m => m.delete()
-						.catch(error => bot.winston.info(error.stack)));
+						.catch(error => console.log(error.stack)));
 				});
 		}
 	},
@@ -468,7 +530,7 @@ var commands = {
 				tosend.push(clean(err.message));
 				tosend.push('\`\`\`');
 				message.edit(tosend)
-					.catch(error => bot.winston.info(error.stack));
+					.catch(error => console.log(error.stack));
 			}
 		}
 	},
@@ -480,10 +542,8 @@ var commands = {
 		alias: '',
 		execute: function(client, message) {
 			message.edit('Rebooting...').then(() => {
-				client.destroy().then(() => {
-					process.exit();
-				});
-			});
+				process.exit();
+			}).catch(error => console.log(error.stack));
 		}
 	},
 
