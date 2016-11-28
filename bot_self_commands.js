@@ -43,6 +43,71 @@ const aliases = {
 
 var commands = {
 
+	// cmdname: {
+	// 	name: '',
+	// 	description: '',
+	// 	usage: '',
+	// 	alias: '',
+	// 	execute: function(client, message){
+	//
+	// 	}
+	// },
+
+	idiotsguide: {
+		name: 'An Idiot\'s Guide',
+		description: 'A quick promotional embed of an Idiot\'s Guide',
+		usage: '',
+		alias: '',
+		permissions: ['EMBED_LINKS'],
+		execute: function(client, message){
+			let embed = {
+				color: 0xdd2825,
+				description: 'Introducing a basic how to guide on creating and running a discord.js bot, _"An Idiot\'s Guide"_ is catered to the fresh faced discord bot developers, a new video every week(ish) but be-warned, I like to curse like a sailor, so it’s NSFW-ish and is recommended for the mature viewer.',
+				fields: [{
+					name: '❯ Channel Link',
+					value: '[An Idiot\'s Guide](https://www.youtube.com/channel/UCLun-hgcYUgNvCCj4sIa-jA)',
+					inline: true
+				}, {
+					name: '❯ Subscribe',
+					value: '[Click Here](https://www.youtube.com/channel/UCLun-hgcYUgNvCCj4sIa-jA?sub_confirmation=1)',
+					inline: true
+				}, {
+					name: '❯ Episode 1',
+					value: '[Watch Now](https://www.youtube.com/watch?v=rVfjZrqoQ7o)',
+					inline: true
+				}, {
+					name: '❯ Episode 2',
+					value: '[Watch Now](https://www.youtube.com/watch?v=8AiZBdcPKOM)',
+					inline: true
+				}, {
+					name: '❯ Episode 3',
+					value: '[Watch Now](https://www.youtube.com/watch?v=oDJrtA1YORw)',
+					inline: true
+				}, {
+					name: '\u200B',
+					value: '\u200B'
+				}, {
+					name: '❯ Discord.js Playlist',
+					value: '[Watch Now](https://www.youtube.com/playlist?list=PLR2_rarYLHfg6ZJqq0WTMmI9uLcd7_GRO)',
+					inline: true
+				}, {
+					name: '❯ Hosting Playlist',
+					value: '[Watch Now](https://www.youtube.com/playlist?list=PLR2_rarYLHfjr6tzXXSFO0o326dQlnxUB)',
+					inline: true
+				}, {
+					name: '\u200B',
+					value: '\u200B'
+				}],
+				thumbnail: {url: 'https://yt3.ggpht.com/-h_55QDA6IF0/AAAAAAAAAAI/AAAAAAAAAAA/jPYJ_b4oRAQ/s100-c-k-no-mo-rj-c0xffffff/photo.jpg'},
+				footer: {
+					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
+					text: 'An Idiot\'s Guide'
+				}
+			};
+			message.delete().then(message.channel.sendMessage('', {embed}));
+		}
+	},
+
 	fml: {
 		name: 'Fuck my life',
 		description: 'Quotes from fmylife.com',
@@ -62,7 +127,7 @@ var commands = {
 
 	spy: {
 		name: 'spy',
-		description:'',
+		description: '',
 		usage: '',
 		alias: '',
 		execute: function(client, message, args) {
@@ -73,12 +138,12 @@ var commands = {
 			console.log(ui_name);
 			let spymsg = [
 				'USER INFO',
-				`User ID      : ${ui_name.user.id}`,
-				`Nickname     : ${ui_name.nickname}`,
-				`Username     : ${ui_name.user.username}`,
-				`Discrim	  : ${ui_name.user.discriminator}`,
-				`Bot          : ${ui_name.user.bot}`,
-				`Joined       : ${ui_name.joinedTimestamp}`,
+				`User ID			: ${ui_name.user.id}`,
+				`Nickname		 : ${ui_name.nickname}`,
+				`Username		 : ${ui_name.user.username}`,
+				`Discrim		: ${ui_name.user.discriminator}`,
+				`Bot					: ${ui_name.user.bot}`,
+				`Joined			 : ${ui_name.joinedTimestamp}`,
 			];
 			message.delete().catch(error => console.log(error.stack));
 			message.channel.sendCode('LDIF', spymsg).catch(error => console.log(error.stack));
@@ -270,33 +335,27 @@ var commands = {
 			let embed = {
 				color: 0xFF9900,
 				description: '**Selfbot Statistics**\n',
-				fields: [
-					{
-						name: '❯ Uptime',
-						value: moment.duration(client.uptime).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]'),
-						inline: false
-					},
-					{
-						name: '❯ Launched',
-						value: `${bot.date} @ ${bot.time}`,
-						inline: true
-					},
-					{
-						name: '❯ Memory usage',
-						value: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
-						inline: true
-					},
-					{
-						name: '❯ Version',
-						value: pack.version,
-						inline: true
-					},
-					{
-						name:  '❯ Installed Packages',
-						value: '\u200B',
-						inline: false
-					}
-				],
+				fields: [{
+					name: '❯ Uptime',
+					value: moment.duration(client.uptime).format('d[ days], h[ hours], m[ minutes, and ]s[ seconds]'),
+					inline: false
+				}, {
+					name: '❯ Launched',
+					value: `${bot.date} @ ${bot.time}`,
+					inline: true
+				}, {
+					name: '❯ Memory usage',
+					value: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
+					inline: true
+				}, {
+					name: '❯ Version',
+					value: pack.version,
+					inline: true
+				}, {
+					name: '❯ Installed Packages',
+					value: '\u200B',
+					inline: false
+				}],
 				timestamp: new Date(),
 				footer: {
 					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
@@ -306,21 +365,20 @@ var commands = {
 			for (key in deps) {
 				embed.fields.push({
 					name: `**${key}**`,
-					value: deps[key].replace('^','').replace('github:hydrabolt/discord.js#', ''),
+					value: deps[key].replace('^', '').replace('github:hydrabolt/discord.js#', ''),
 					inline: true
 				});
 			}
-			embed.fields.push(
-				{
-					name: '❯ Source Code',
-					value: '[GitHub](https://github.com/YorkAARGH/Selfbot)'
-				},
-				{
-					name: '\u200B',
-					value: '\u200B'
-				}
-			);
-			message.edit('', {embed}).catch(error => console.log(error));
+			embed.fields.push({
+				name: '❯ Source Code',
+				value: '[GitHub](https://github.com/YorkAARGH/Selfbot)'
+			}, {
+				name: '\u200B',
+				value: '\u200B'
+			});
+			message.edit('', {
+				embed
+			}).catch(error => console.log(error));
 			//message.edit(infomsg).then(m => m.delete(10000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
 		}
 	},
@@ -422,9 +480,9 @@ var commands = {
 		execute: function(client, message, args) {
 			let note = args.join(' ');
 			client.channels.get(settings.notchannel).sendMessage('***TODO: ***' + note)
-			.then(message.edit('Posted successfully.')
-			.then(message.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack)))
-			.catch(error => console.log(error.stack));
+				.then(message.edit('Posted successfully.')
+					.then(message.delete(1000).catch(error => console.log(error.stack))).catch(error => console.log(error.stack)))
+				.catch(error => console.log(error.stack));
 		}
 	},
 
@@ -453,8 +511,8 @@ var commands = {
 		execute: function(client, message, args) {
 			let messagecount = parseInt(args) ? parseInt(args[0]) : 1;
 			message.channel.fetchMessages({
-				limit: 100
-			})
+					limit: 100
+				})
 				.then(messages => {
 					let msg_array = messages.array();
 					msg_array = msg_array.filter(m => m.author.id === client.user.id);
@@ -474,8 +532,8 @@ var commands = {
 		execute: function(client, message, args) {
 			let messagecount = parseInt(args);
 			message.channel.fetchMessages({
-				limit: messagecount + 1
-			})
+					limit: messagecount + 1
+				})
 				.then(messages => {
 					messages.map(m => m.delete()
 						.catch(error => console.log(error.stack)));

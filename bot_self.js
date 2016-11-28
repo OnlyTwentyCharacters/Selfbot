@@ -138,6 +138,8 @@ client.on('warn', e => {
 client.on('debug', e => {
 	winston.info(e.replace(token, 'that was redacted'));
 });
+client.on('error', (e) => console.log(e.data));
+client.ws.on('close', (e) => console.log(e.data));
 
 client.login(cmdhandler.settings.token).catch(error => console.log(error.stack));
 
