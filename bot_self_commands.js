@@ -58,7 +58,6 @@ var commands = {
 		description: 'A quick promotional embed of an Idiot\'s Guide',
 		usage: '',
 		alias: '',
-		permissions: ['EMBED_LINKS'],
 		execute: function(client, message){
 			let embed = {
 				color: 0xdd2825,
@@ -72,33 +71,41 @@ var commands = {
 					value: '[Click Here](https://www.youtube.com/channel/UCLun-hgcYUgNvCCj4sIa-jA?sub_confirmation=1)',
 					inline: true
 				}, {
+					name: '\u200B',
+					value: '\u200B',
+					inline: true
+				}, {
 					name: '❯ Episode 1',
-					value: '[Watch Now](https://www.youtube.com/watch?v=rVfjZrqoQ7o)',
+					value: '[Getting Started](https://www.youtube.com/watch?v=rVfjZrqoQ7o)',
 					inline: true
 				}, {
 					name: '❯ Episode 2',
-					value: '[Watch Now](https://www.youtube.com/watch?v=8AiZBdcPKOM)',
+					value: '[Multiple Commands](https://www.youtube.com/watch?v=8AiZBdcPKOM)',
 					inline: true
 				}, {
 					name: '❯ Episode 3',
-					value: '[Watch Now](https://www.youtube.com/watch?v=oDJrtA1YORw)',
+					value: '[Guild Events](https://www.youtube.com/watch?v=oDJrtA1YORw)',
 					inline: true
 				}, {
-					name: '\u200B',
+					name: '❯ Playlists',
 					value: '\u200B'
 				}, {
-					name: '❯ Discord.js Playlist',
+					name: 'Discord.js',
 					value: '[Watch Now](https://www.youtube.com/playlist?list=PLR2_rarYLHfg6ZJqq0WTMmI9uLcd7_GRO)',
 					inline: true
 				}, {
-					name: '❯ Hosting Playlist',
+					name: 'Hosting',
 					value: '[Watch Now](https://www.youtube.com/playlist?list=PLR2_rarYLHfjr6tzXXSFO0o326dQlnxUB)',
+					inline: true
+				}, {
+					name: '\u200B',
+					value: '\u200B',
 					inline: true
 				}, {
 					name: '\u200B',
 					value: '\u200B'
 				}],
-				thumbnail: {url: 'https://yt3.ggpht.com/-h_55QDA6IF0/AAAAAAAAAAI/AAAAAAAAAAA/jPYJ_b4oRAQ/s100-c-k-no-mo-rj-c0xffffff/photo.jpg'},
+				// thumbnail: {url: 'https://yt3.ggpht.com/-h_55QDA6IF0/AAAAAAAAAAI/AAAAAAAAAAA/jPYJ_b4oRAQ/s100-c-k-no-mo-rj-c0xffffff/photo.jpg'},
 				footer: {
 					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
 					text: 'An Idiot\'s Guide'
