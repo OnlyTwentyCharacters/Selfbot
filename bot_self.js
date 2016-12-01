@@ -1,6 +1,9 @@
 const Discord = require('discord.js'),
 	client = new Discord.Client({
 		fetchAllMembers: true
+	}),
+	assistant = new Discord.Client({
+		fetchAllMembers: true
 	});
 const winston = require('winston');
 const sql = require('sqlite');
@@ -37,10 +40,24 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-	if (message.isMentioned(client.user.id)) {
-		console.log(`Just mentioned by ${message.author.username} (${message.author.id}) on ${message.guild.name}/${message.channel.name}:\n${message.cleanContent}`);
-	}
 
+	if (message.isMentioned(client.user.id)) {
+		assistant.channels.get(settings.mention).sendMessage(`Sir, you have a mention from **${message.author.username}**, from the _${message.channel}_ channel located on the _${message.guild}_ guild.\n\u200B`, {
+			embed:{
+				color: 3447003,
+				author: {
+					name: message.author.username,
+					icon_url: message.author.avatarURL
+				},
+				description: `${message.cleanContent.replace('@York ', '').replace('@York,', '')}`,
+				timestamp: new Date(),
+				footer: {
+					icon_url: client.user.avatarURL,
+					text: '© Example'
+				}
+			}
+		});
+	}
 	if (message.author.id !== client.user.id) return;
 	if (!message.content.startsWith(settings.prefix)) return;
 
@@ -94,8 +111,13 @@ client.on('debug', e => {
 client.on('error', (e) => console.log(e.data));
 client.ws.on('close', (e) => console.log(e.data));
 
+assistant.on('message', amessage => {
+	if (amessage.author.id !== client.user.id) return;
+});
+
+assistant.login(settings.assistant);
 client.login(settings.token).catch(error => console.log(error));
 
 process.on('unhandledRejection', err => {
-	console.error('Uncaught Promise Error: \n' + err);
+	console.log('Uncaught Promise Error: \n' + err);
 });
