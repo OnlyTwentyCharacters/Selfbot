@@ -4,36 +4,32 @@ const Discord = require('discord.js'),
 	});
 const winston = require('winston');
 const sql = require('sqlite');
-
+sql.open('./selfbot.sqlite');
+client.sql = sql;
+const settings = require('./settings.json');
+client.settings = settings;
 winston.add(winston.transports.File, {
 	filename: 'logs/selfbot.log'
 });
 winston.remove(winston.transports.Console);
 
-var cmdhandler = require('./bot_self_commands.js');
 var date = new Date().toLocaleDateString();
+client.date = date;
 var time = new Date().toLocaleTimeString();
-
+client.time = time;
 var log = (message) => {
-	client.channels.get(cmdhandler.settings.logchannel).sendMessage(message).catch(error => console.log(error.stack));
+	client.channels.get(settings.logchannel).sendMessage(message).catch(error => console.log(error));
 };
 
-let unit = ['', 'K', 'M', 'G', 'T', 'P'];
-
-function bytesToSize(input, precision) {
-	let index = Math.floor(Math.log(input) / Math.log(1024));
-	if (unit >= unit.length) return input + ' B';
-	return (input / Math.pow(1024, index)).toFixed(precision) + ' ' + unit[index] + 'B';
-}
-let MemoryUsing = bytesToSize(process.memoryUsage().rss, 3);
-
 client.on('ready', () => {
+	delete client.user.email;
+	delete client.user.verified;
 	let bootup = [
 		'```xl',
 		'BOOT TIME STATISTICS',
-		`• Booted   : ${date} @ ${time}`,
+		`• Booted	 : ${date} @ ${time}`,
 		`• Users	: ${client.users.size}`,
-		`• Servers  : ${client.guilds.size}`,
+		`• Servers	: ${client.guilds.size}`,
 		`• Channels : ${client.channels.size}`,
 		'```'
 	];
@@ -41,58 +37,32 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-	// Log mentions cuz fuck you that's why
 	if (message.isMentioned(client.user.id)) {
 		console.log(`Just mentioned by ${message.author.username} (${message.author.id}) on ${message.guild.name}/${message.channel.name}:\n${message.cleanContent}`);
 	}
-	const none2fa = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
-	const full2fa = /((?:mfa.[\w-]+))/g;
-	const match1 = message.content.match(none2fa);
-	const match2 = message.content.match(full2fa);
-	if (match1) console.log(`Token Detected: ${match1[0]}`);
-	if (match2) console.log(`Token Detected: ${match2[0]}`);
 
-	if (message.author !== client.user) return;
-	if (!message.content.startsWith(cmdhandler.settings.prefix)) return;
+	if (message.author.id !== client.user.id) return;
+	if (!message.content.startsWith(settings.prefix)) return;
 
+	const args = message.content.split(' ');
+	const command = args.shift().slice(settings.prefix.length);
+
+	try {
+		let cmdFile = require('./commands/' + command);
+		cmdFile.run(client, message, args);
+	} catch (e) {
+		log(e);
+		console.log(`Command ${command} failed\n ${e.stack}`);
+	}
+});
+
+client.on('message', message => {
 	if (message.content.split(' ').length === 1) {
-		sql.open('./selfbot.sqlite').then(() => sql.get('SELECT * FROM shortcuts WHERE name = ?', [message.content.slice(1)])).then(row => {
+		sql.get('SELECT * FROM shortcuts WHERE name = ?', [message.content.slice(1)]).then(row => {
 			if (!row) return;
-			message.edit(row.contents).catch(error => console.log(error.stack));
-		}).catch(error => console.log(error.stack));
+			message.edit(row.contents);
+		});
 	}
-
-	let cmdTxt = message.content.split(' ')[0].replace(cmdhandler.settings.prefix, '').toLowerCase(),
-		args = message.content.replace(/ {2,}/g, ' ').split(' ').slice(1);
-
-	let cmd;
-	if (cmdhandler.commands.hasOwnProperty(cmdTxt)) {
-		cmd = cmdhandler.commands[cmdTxt];
-	} else if (cmdhandler.aliases.hasOwnProperty(cmdTxt)) {
-		cmd = cmdhandler.commands[cmdhandler.aliases[cmdTxt]];
-	}
-
-	if (cmd) {
-		if (cmd.hasOwnProperty('permissions')) {
-			let missingPerms = [];
-			cmd.permissions.forEach(val => {
-				if (!message.channel.permissionsFor(client.user).hasPermission(val)) {
-					missingPerms.push(cmdhandler.toTitleCase(val.replace('_', ' ')));
-				}
-			});
-			if (missingPerms.length > 0) {
-				message.edit(`That command cannot be run without the following Missing Permissions: **${missingPerms}**`).catch(error => console.log(error.stack));
-				return;
-			}
-		}
-		try {
-			cmd.execute(client, message, args);
-		} catch (e) {
-			log(e);
-			message.edit(`command ${cmdTxt} failed :(\n ${e.stack}`).catch(error => console.log(error.stack));
-		}
-	}
-
 });
 
 client.on('reconnecting', () => {
@@ -106,23 +76,6 @@ client.on('disconnect', () => {
 	let time = new Date().toLocaleTimeString();
 	console.log(`Disconnected on the ${date}, at ${time}, attempting to reconnect`);
 });
-
-let reload = (message) => {
-	delete require.cache[require.resolve('./bot_self_commands.js')];
-	try {
-		cmdhandler = require('./bot_self_commands.js');
-	} catch (err) {
-		message.edit(`Problem loading bot_self_commands.js: ${err}`).then(
-			response => response.delete(1000).catch(error => console.log(error.stack))
-		).catch(error => console.log(error.stack));
-		log(`Problem loading bot_self_commands.js: ${err}`);
-	}
-	message.edit('Commands reload was a success!').then(
-		response => response.delete(1000).catch(error => console.log(error.stack))
-	).catch(error => console.log(error.stack));
-	log('Commands reload was a success!');
-};
-
 
 
 // Catch discord.js errors and remove client token,
@@ -141,14 +94,8 @@ client.on('debug', e => {
 client.on('error', (e) => console.log(e.data));
 client.ws.on('close', (e) => console.log(e.data));
 
-client.login(cmdhandler.settings.token).catch(error => console.log(error.stack));
+client.login(settings.token).catch(error => console.log(error));
 
-exports.reload = reload;
-exports.time = time;
-exports.date = date;
-exports.log = log;
-exports.MemoryUsing = MemoryUsing;
-exports.token = token;
 process.on('unhandledRejection', err => {
 	console.error('Uncaught Promise Error: \n' + err);
 });
