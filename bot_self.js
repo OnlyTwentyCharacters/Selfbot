@@ -7,6 +7,8 @@ const Discord = require('discord.js'),
 	});
 const winston = require('winston');
 const sql = require('sqlite');
+const moment = require('moment');
+const chalk = require('chalk');
 sql.open('./selfbot.sqlite');
 client.sql = sql;
 const settings = require('./settings.json');
@@ -67,6 +69,7 @@ client.on('message', message => {
 	try {
 		let cmdFile = require('./commands/' + command);
 		cmdFile.run(client, message, args);
+		console.log(`The command ${chalk.bold.bgRed(command)} was used ${chalk.bold.bgWhite.black(moment().format('HH:mm:ss, dddd MMMM Do YYYY'))}`);
 	} catch (e) {
 		log(e);
 		console.log(`Command ${command} failed\n ${e.stack}`);
@@ -105,9 +108,9 @@ client.on('error', e => {
 client.on('warn', e => {
 	winston.warn(e.replace(token, 'that was redacted'));
 });
-client.on('debug', e => {
-	winston.info(e.replace(token, 'that was redacted'));
-});
+// client.on('debug', e => {
+// 	winston.info(e.replace(token, 'that was redacted'));
+// });
 client.on('error', (e) => console.log(e.data));
 client.ws.on('close', (e) => console.log(e.data));
 
@@ -118,6 +121,6 @@ assistant.on('message', amessage => {
 assistant.login(settings.assistant);
 client.login(settings.token).catch(error => console.log(error));
 
-process.on('unhandledRejection', err => {
-	console.log('Uncaught Promise Error: \n' + err);
+process.on('unhandledRejection', error => {
+	console.log('Uncaught Promise Error: \n' + error.stack);
 });
