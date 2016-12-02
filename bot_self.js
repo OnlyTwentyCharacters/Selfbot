@@ -87,6 +87,7 @@ client.on('message', message => {
 		}
 		try {
 			cmd.execute(client, message, args);
+			console.log(args);
 		} catch (e) {
 			log(e);
 			message.edit(`command ${cmdTxt} failed :(\n ${e.stack}`).catch(error => console.log(error.stack));
