@@ -4,6 +4,7 @@ const util = require('util');
 const fse = require('fs-promise');
 const sql = require('sqlite');
 const moment = require('moment');
+const exec = require('child_process').exec;
 require('moment-duration-format');
 const request = require('superagent');
 var HTMLParser = require('fast-html-parser');
@@ -53,6 +54,22 @@ var commands = {
 	// 	}
 	// },
 
+	selfie: {
+		name: '',
+		description: '',
+		usage: '',
+		alias: '',
+		execute: function(client, message, args){
+			message.delete();
+			exec('fswebcam --fps 15 -S 8 -r 640x360 --no-banner selfie.jpg', (error) => {
+					// callback runs when the command is done!
+				if (error) return;
+				const image = fse.readFileSync('selfie.jpg');
+				client.channels.get(message.channel.id).sendFile(image, 'selfie.jpg', args.join(' '));
+			});
+		}
+	},
+
 	idiotsguide: {
 		name: 'An Idiot\'s Guide',
 		description: 'A quick promotional embed of an Idiot\'s Guide',
@@ -87,6 +104,18 @@ var commands = {
 					value: '[Guild Events](https://www.youtube.com/watch?v=oDJrtA1YORw)',
 					inline: true
 				}, {
+					name: '❯ Episode 4',
+					value: '[Client Events](https://www.youtube.com/watch?v=KKmyTfGbY54)',
+					inline: true
+				}, {
+					name: '❯ Episode 5',
+					value: '[Roles](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+					inline: true
+				}, {
+					name: '❯ Episode 6',
+					value: '[Handling](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+					inline: true
+				}, {
 					name: '❯ Playlists',
 					value: '\u200B'
 				}, {
@@ -105,7 +134,6 @@ var commands = {
 					name: '\u200B',
 					value: '\u200B'
 				}],
-				// thumbnail: {url: 'https://yt3.ggpht.com/-h_55QDA6IF0/AAAAAAAAAAI/AAAAAAAAAAA/jPYJ_b4oRAQ/s100-c-k-no-mo-rj-c0xffffff/photo.jpg'},
 				footer: {
 					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
 					text: 'An Idiot\'s Guide'
