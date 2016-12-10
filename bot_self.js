@@ -17,9 +17,6 @@ var date = new Date().toLocaleDateString();
 client.date = date;
 var time = new Date().toLocaleTimeString();
 client.time = time;
-var log = (message) => {
-	client.channels.get(settings.logchannel).sendMessage(message).catch(error => console.log(error));
-};
 require('./util/clientEvents')(client);
 // client.on('message', message => {
 // 	if (message.isMentioned(client.user.id)) {
@@ -54,7 +51,6 @@ client.on('warn', e => {
 client.on('debug', e => {
 	winston.info(e.replace(token, 'that was redacted'));
 });
-client.on('error', (e) => console.log(e.data));
 client.ws.on('close', (e) => console.log(e.data));
 
 client.login(settings.token).catch(error => console.log(error));
