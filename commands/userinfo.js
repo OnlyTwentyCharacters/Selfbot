@@ -12,5 +12,5 @@ exports.run = function(client, message, args) {
 		`Created   : ${moment(ui_name.user.createdAt).format('dddd, MMMM Do YYYY, h:mm:ss a')}`,
 		`Avatar    : ${ui_name.user.avatarURL}`
 	];
-	message.delete().then(message.channel.sendCode('LDIF', spymsg).catch(error => console.log(error.stack))).catch(error => console.log(error.stack));
+	message.editCode('LDIF', spymsg).catch(error => console.log(error.stack)).catch(error => console.log(error.stack));
 };

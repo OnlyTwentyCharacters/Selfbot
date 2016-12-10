@@ -16,32 +16,31 @@ exports.run = function(client, message) {
 			inline: true
 		}, {
 			name: '❯ Episode 1',
-			value: '[Getting Started](https://www.youtube.com/watch?v=rVfjZrqoQ7o)\n',
+			value: '[Getting Started](https://www.youtube.com/watch?v=rVfjZrqoQ7o)',
 			inline: true
 		}, {
 			name: '❯ Episode 2',
-			value: '[Multiple Commands](https://www.youtube.com/watch?v=8AiZBdcPKOM)\n',
+			value: '[Multiple Commands](https://www.youtube.com/watch?v=8AiZBdcPKOM)',
 			inline: true
 		}, {
 			name: '❯ Episode 3',
-			value: '[Guild Events](https://www.youtube.com/watch?v=oDJrtA1YORw)\n',
+			value: '[Guild Events](https://www.youtube.com/watch?v=oDJrtA1YORw)',
 			inline: true
 		}, {
 			name: '❯ Episode 4',
-			value: 'Client Events\n',
+			value: '[Client Events](https://www.youtube.com/watch?v=KKmyTfGbY54)',
 			inline: true
 		}, {
 			name: '❯ Episode 5',
-			value: '???????????\n',
+			value: '[Roles](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
 			inline: true
 		}, {
 			name: '❯ Episode 6',
-			value: '???????????\n',
+			value: '[Handling](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
 			inline: true
 		}, {
 			name: '❯ Playlists',
-			value: '\u200B',
-			inline: true
+			value: '\u200B'
 		}, {
 			name: 'Discord.js',
 			value: '[Watch Now](https://www.youtube.com/playlist?list=PLR2_rarYLHfg6ZJqq0WTMmI9uLcd7_GRO)',
@@ -52,6 +51,10 @@ exports.run = function(client, message) {
 			inline: true
 		}, {
 			name: '\u200B',
+			value: '\u200B',
+			inline: true
+		}, {
+			name: '\u200B',
 			value: '\u200B'
 		}],
 		footer: {
@@ -59,5 +62,5 @@ exports.run = function(client, message) {
 			text: 'An Idiot\'s Guide'
 		}
 	};
-	message.delete().then(message.channel.sendMessage('', {embed}).catch(error => console.log(error))).catch(error => console.log(error));
+	message.edit('', {embed});
 };
