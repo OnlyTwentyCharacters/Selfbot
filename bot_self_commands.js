@@ -9,6 +9,7 @@ const request = require('superagent');
 var HTMLParser = require('fast-html-parser');
 var settings = require('./settings.json');
 var pack = require('./package.json');
+const exec = require('child_process').exec;
 
 const Pad = (str, l) => {
 	return str + Array(l - str.length + 1).join(' ');
@@ -29,6 +30,7 @@ const aliases = {
 	'ev': 'eval',
 	'pu': 'purge',
 	'pr': 'prune',
+	're': 'reply',
 	'rld': 'reload',
 	'bbl': 'afk',
 	'brb': 'afk',
@@ -52,6 +54,49 @@ var commands = {
 	//
 	// 	}
 	// },
+
+	reply: {
+		name: 'Reply',
+		description: 'This quotes the message supplied via message ID',
+		usage: 'reply <messageId> <response>',
+		alias: 're',
+		execute: function(client, message, args) {
+			const [replyTo, ...replyText] = args;
+			message.channel.fetchMessages({
+				limit: 1,
+				around: replyTo
+			})
+				.then(messages => {
+					const replyToMsg = messages.first();
+					message.channel.sendMessage(`${replyToMsg.author}, ${replyText.join(' ')}`, {
+						embed: {
+							color: 0xC274FF,
+							author: {
+								name: `${replyToMsg.author.username} (${replyToMsg.author.id})`,
+								icon_url: replyToMsg.author.avatarURL
+							},
+							description: replyToMsg.content
+						}
+					}).then(() => message.delete());
+				}).catch(console.error);
+		}
+	},
+
+	selfie: {
+		name: 'Selfie',
+		description: 'Smile! This takes a picture from the webcam attached to the pi',
+		usage: '',
+		alias: '',
+		execute: function(client, message, args) {
+			message.delete();
+			exec('fswebcam --fps 15 -S 8 -r 400x225 --no-banner selfie.jpg', (error) => {
+				// callback runs when the command is done!
+				if (error) return;
+				const image = fse.readFileSync('selfie.jpg');
+				client.channels.get(message.channel.id).sendFile(image, 'selfie.jpg', args.join(' '));
+			});
+		}
+	},
 
 	idiotsguide: {
 		name: 'An Idiot\'s Guide',
@@ -87,6 +132,18 @@ var commands = {
 					value: '[Guild Events](https://www.youtube.com/watch?v=oDJrtA1YORw)',
 					inline: true
 				}, {
+					name: '❯ Episode 4',
+					value: '[Client Events](https://www.youtube.com/watch?v=KKmyTfGbY54)',
+					inline: true
+				}, {
+					name: '❯ Episode 5',
+					value: '[Roles](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+					inline: true
+				}, {
+					name: '❯ Episode 6',
+					value: '[Handling](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+					inline: true
+				}, {
 					name: '❯ Playlists',
 					value: '\u200B'
 				}, {
@@ -105,7 +162,6 @@ var commands = {
 					name: '\u200B',
 					value: '\u200B'
 				}],
-				// thumbnail: {url: 'https://yt3.ggpht.com/-h_55QDA6IF0/AAAAAAAAAAI/AAAAAAAAAAA/jPYJ_b4oRAQ/s100-c-k-no-mo-rj-c0xffffff/photo.jpg'},
 				footer: {
 					icon_url: client.user.avatarURL, // eslint-disable-line camelcase
 					text: 'An Idiot\'s Guide'
