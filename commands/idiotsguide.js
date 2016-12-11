@@ -32,7 +32,7 @@ exports.run = function(client, message) {
 			inline: true
 		}, {
 			name: '❯ Episode 5',
-			value: '[Roles](https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+			value: '[Roles](https://www.youtube.com/watch?v=S5DVdjLQA44)',
 			inline: true
 		}, {
 			name: '❯ Episode 6',
