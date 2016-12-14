@@ -1,7 +1,7 @@
 const settings = require('../settings.json');
 module.exports = client => {
 	var log = (message) => {
-		client.channels.get(settings.logchannel).sendMessage(message).catch(error => console.log(error));
+		client.channels.get(settings.logs).sendMessage(message).catch(error => console.log(error));
 	};
 	delete client.user.email;
 	delete client.user.verified;
