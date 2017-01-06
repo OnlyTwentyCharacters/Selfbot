@@ -641,7 +641,8 @@ var commands = {
 					tosend.push(type);
 					tosend.push('\`\`\`');
 				}
-				message.edit(tosend);
+				message.channel.sendMessage(tosend);
+				message.delete();
 			} catch (err) {
 				let tosend = [];
 				tosend.push('**EVAL:** \`\`\`js');
@@ -650,8 +651,9 @@ var commands = {
 				tosend.push('**Error:** \`\`\`LDIF');
 				tosend.push(clean(err.message));
 				tosend.push('\`\`\`');
-				message.edit(tosend)
+				message.channel.sendMessage(tosend)
 					.catch(error => console.log(error.stack));
+				message.delete();
 			}
 		}
 	},
